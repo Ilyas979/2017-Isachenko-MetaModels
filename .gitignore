@@ -2,3 +2,10 @@
 code/.ipynb_checkpoints/
 data/.DS_Store
 data/USC-HAD/USC-HAD_cleared.txt
+doc/*.aux
+doc/*.log
+doc/*.nav
+doc/*.out
+doc/*.snm
+doc/*.gz
+doc/*.toc
