@@ -1,3 +1,4 @@
 .DS_Store
 code/.ipynb_checkpoints/
 data/.DS_Store
+data/USC-HAD/USC-HAD_cleared.txt
