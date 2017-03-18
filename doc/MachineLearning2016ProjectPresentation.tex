@@ -12,8 +12,8 @@
 \usepackage{enumerate}
 \usepackage{epstopdf}
 \usepackage{multicol}
-\usetheme{CambridgeUS}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
-\usecolortheme{rose}
+\usetheme{Copenhagen}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{whale}
 %\definecolor{beamer@blendedblue}{RGB}{15,120,80}
 
 \newcommand{\T}{{\text{\tiny\sffamily\upshape\mdseries T}}}
@@ -65,7 +65,7 @@
 	
 \end{frame}
 %--------------------------------------------------------------------------------
-\section{Problem Statement}
+%\section{Problem Statement}
 \begin{frame}{Problem Statement}
 	\begin{itemize}
 		\item $s \in \mathcal{S}$ - complex structured object
@@ -99,15 +99,23 @@
 			\mathbb{\theta}^* = \arg \min_{\theta} L(g, \theta, \mathfrak{D}).
 		\]
 		E.g. 
-			$g(\mathbf{h}, \theta)$ - logistic regression model, \\ \hspace{0.7cm}
-			$\theta$ - logistic regression weights, \\ \hspace{0.7cm}
+			$g(\mathbf{h}, \theta)$ - classification model, \\ \hspace{0.7cm}
+			$\theta$ - model parameters, \\ \hspace{0.7cm}
 			$L (g, \theta, \mathfrak{D})$ - classification error function.
 		
 	\end{enumerate}
 
 \end{frame}
 %--------------------------------------------------------------------------------
-\section{Feature extraction}
+\begin{frame}{Time series example}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=1\linewidth]{ts_example.png}
+		\label{ts_example}
+	\end{figure}
+\end{frame}
+%--------------------------------------------------------------------------------
+%\section{Feature extraction}
 \begin{frame}{Expert functions}
 	Prior knowledge about the objects could allow to choose the features.
 	\begin{block}{Feature description}
@@ -166,10 +174,6 @@
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Data}
-
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Time series example}
 
 \end{frame}
 %--------------------------------------------------------------------------------
