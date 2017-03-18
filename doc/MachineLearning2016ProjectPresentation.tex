@@ -15,7 +15,9 @@
 \usetheme{CambridgeUS}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
 \usecolortheme{rose}
 %\definecolor{beamer@blendedblue}{RGB}{15,120,80}
-%----------------------------------------------------------------------------------------------------------
+
+\newcommand{\T}{{\text{\tiny\sffamily\upshape\mdseries T}}}
+%--------------------------------------------------------------------------------
 \title[\hbox to 56mm{Human Activity Recognition  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
 {Generative models for human activity recognition}
 \author[ROY team]{\\
@@ -36,20 +38,76 @@
 %--------------------------------------------------------------------------------
 \begin{frame}{Project goal}
 	
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Related work}
+	\begin{block}{Aim}
+		Classification model for complex-structured objects.
+	\end{block}
+
+	\begin{block}{Problem}
+		Initial object has no appropriate feature description.
+	\end{block}
+	
+	\textbf{Applications:}
+	\begin{itemize}
+		\item image processing;
+		\item signal classification;
+		\item topic modelling;
+		\item \textit{time series analysis}.
+	\end{itemize}
 	
 \end{frame}
 %--------------------------------------------------------------------------------
+\begin{frame}{Related work}
+	\begin{enumerate}
+		\item Wang W. et al. Human activity recognition using smart phone embedded sensors // \emph{International Joint Conference on Neural Networks}. 2014.
+		\item Kwapisz, Jennifer R., Gary M. Weiss, and Samuel A. Moore. Activity recognition using cell phone accelerometers. // \emph{ACM SigKDD Explorations Newsletter}. 12(2): 74-82. 2011.
+		\item Kuznetsov M. P., and Ivkin N. P. Time series classification algorithm using combined feature description. // \emph{Journal of Machine Learning and Data Analysis}. 2015.
+	\end{enumerate}
+	
+\end{frame}
+%--------------------------------------------------------------------------------
+\section{Problem Statement}
 \begin{frame}{Problem Statement}
+	\begin{itemize}
+		\item $s \in \mathcal{S}$ - complex structured object
+		\item $y \in Y$ - class label
+	\end{itemize}
+	\begin{block}{Task}
+	Given: $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$ recover
+	\[
+		y = f(s) \quad \forall s \in \mathcal{S}.
+	\]
+	\end{block}
+	\begin{block}{Approach}
+		Suppose $f = g \circ h$, where
+		\begin{itemize}
+			\item $h(s): \mathcal{S} \rightarrow H \in \mathbb{R}^n$;
+			\item $g(\mathbf{h}, \theta)$~--- parametric map from $H$ into $Y$ (classification model).
+		\end{itemize}
+	\end{block}
+\end{frame}
+%--------------------------------------------------------------------------------
+\begin{frame}{Optimal parameters}
+	\begin{enumerate}
+		\item Choice of feature map $h(s)$ by 
+		\begin{itemize}
+			\item prior (expert) knowledge;
+			\item minimizing error functional.
+		\end{itemize}
+		
+		\item Classification for $\{(h(s_i) , y_i)\}_{i=1}^m$
+		\[
+			\mathbb{\theta}^* = \arg \min_{\theta} S(g, \theta, \mathfrak{D}).
+		\]
+		E.g. 
+			$g$ - logistic regression, \\ \hspace{0.7cm}
+			$\theta$ - weights, \\ \hspace{0.7cm}
+			$S$ - classification error.
+		
+	\end{enumerate}
 
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Object description}
-
-\end{frame}
-%--------------------------------------------------------------------------------
+\section{Feature extraction}
 \begin{frame}{Expert functions}
 
 \end{frame}
