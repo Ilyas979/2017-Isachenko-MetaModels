@@ -9,3 +9,5 @@ doc/*.out
 doc/*.snm
 doc/*.gz
 doc/*.toc
+doc/*.bbl
+doc/*.blg

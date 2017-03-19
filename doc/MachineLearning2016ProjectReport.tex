@@ -115,7 +115,7 @@
 	linkcolor=red, % внутренние ссылки 
 	citecolor=black, % на библиографию 
 	filecolor=magenta, % на файлы
-	urlcolor=cyan % на URL 
+	urlcolor=blue % на URL 
 } 
 
 \usepackage{csquotes} % Еще инструменты для ссылок 
@@ -141,21 +141,45 @@
 \section*{Introduction}
 This project is dedicated to multiclass classification of complex-structured objects (for which we don't have explicit features). The problem arises in many applications such as image recognition, signal processing or time series classification. We will focus on multiclass multivariate time series classification. In this setup time series are regarded as complex-structured objects without explicit feature description. This is reasonable because we can't operate with original features as time series might be of different size and not aligned \cite{geurts2001pattern}.
 
-We investigate classification of accelerometer time series \cite{wang2014human}. The data is times series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. The task is to predict the activity a person is performing. List of activities might include walking, running, sitting or walking up/down the stairs.
+We investigate classification of accelerometer time series \cite{wang2014human}. The data is time series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. The task is to predict the activity a person is performing. List of activities might include walking, running, sitting or walking up/down the stairs.
 
-In general the problem of classifying complex objects can be splitted in two distinctive procedures. First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. For simplicity, we assume that these two procedures can be built and analyzed separately. In our project we focused mainly on comparing different methods of feature generation \cite{karasikov24feature, ivkin}. Extracted features can be later used for building classifiers and feature selection algorithms.
+In general the problem of classifying complex-structured objects can be split in two distinctive procedures. First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. For simplicity, we assume that these two procedures can be built and analyzed separately. In our project we focused mainly on comparing different methods of feature generation \cite{karasikov24feature, ivkin}. Extracted features can be later used for building classifiers and feature selection algorithms.
 
-The first approach for feature generation is calculating expertly defined functions of time series \cite{kwapisz2011activity}. These functions include mean, standard deviation, mean average deviation and distribution for each component. We consider this approach a baseline, as it is the simplest method we use.
+The first approach for feature generation is calculating expertly defined functions of time series \cite{kwapisz2011activity}. These functions include average value, standard deviation, mean absolute deviation and distribution for each component. We consider this approach a baseline, as it is the simplest method we use.
 
-We compare baseline with more sophisticated parametric feature generation methods. One of them is autoregressive model \cite{lukashin2003adaptive}. For each time series we build parametric model and the use those parameters as features for classification. We also consider the model of singular spectrum of times series \cite{hassani2007singular}. We use eigenvalues of trajectory matrix as features for building classificator.
+We compare baseline with more sophisticated parametric feature generation methods. One of them is autoregressive model \cite{lukashin2003adaptive}. For each time series we build parametric model and use those parameters as features for classification. We also consider the model of singular spectrum analysis of time series \cite{hassani2007singular}. We use eigenvalues of trajectory matrix as features for building classifier.
 
 In the first part of these report we give definitions and make problem statement. In the second part we describe all of the proposed approaches in more detail. Last, we make the experiment on real accelerometer datasets \cite{wisdm, usc}, compare all methods and give conclusions and recommendations for practical use.
 
+\section*{Problem Statement}
+\subsection*{Classification problem}
+Let $\mathcal{S}$ be a space of complex-structured objects, $Y$ is a finite set of class labels. Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$~-- given sample, where $s_i \in \mathcal{S}$ and $y_i \in Y$.
 
-% Решение Программного Комитета:
-%\ACCEPTNOTE
-%\AMENDNOTE
-%\REJECTNOTE
+We consider the problem of recovering the function $f: \mathcal{S} \rightarrow Y$
+\[
+	y = f(s).
+\]
+Let $L(f, \mathfrak{D})$ be an error function which expresses the classification error of the function $f$ over the sample $\mathfrak{D}$. Our goal is to determine function $f^*$ which minimize the error
+\[
+	f^* = \arg \min_{f} L(f, \mathfrak{D}).
+\]
+
+\subsection*{Description of complex-structured objects}
+
+We assume that the target function $f^*$ belongs to the class of functions composition $f = g \circ h$, where
+\begin{itemize}
+	\item $h: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \in \mathbb{R}^n$;
+	\item $g: H \times \Theta \rightarrow Y$ is a parametric map from feature space $H$ to the space of class labels $Y$. The function $g$ is parametrized by a vector parameter $\theta \in \Theta$. 
+\end{itemize}
+
+The determining of the function $f^*$ is equivalent to determining the functions $h^*$ and  $g^*$.
+
+In this paper we consider the following ways of generating the feature space~$H$:
+\begin{itemize}
+	\item expert functions based on prior knowledge of the original objects. For the time series analysis problem these functions are different statistics of given accelerations along each axis such as mean value, standard deviation and others.
+	\item hypothesis of data generation. In this case the features are the estimated parameters of the considered hypothesis.
+\end{itemize}
+
 \bibliographystyle{unsrt}
 \bibliography{ref.bib}
 \end{document}
