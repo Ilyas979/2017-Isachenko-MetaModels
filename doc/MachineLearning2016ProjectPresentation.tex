@@ -145,7 +145,7 @@
 	\end{block}
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Singular Spectrum Analysis}
+\begin{frame}{Singular Spectrum Analysis (SSA)}
 	Trajectory matrix for time series $s = (x_1, \dots, x_T)$:
 	\[
 		\mathbf{X} = 
@@ -174,24 +174,89 @@
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Data}
+\noindent
+\begin{minipage}[t]{0.45\linewidth}
+	\textbf{WISDM}$^1$
+	\begin{table}[]
+		\small
+		\label{my-label}
+		\begin{tabular}{|l|c|}
+			\hline
+			Activity   & \# objects \\
+			\hline
+			Standing   & 229(5.3\%)  \\
+			Walking    & 1917(44.4\%) \\
+			Upstairs   & 466(10.8\%) \\
+			Sitting    & 277(6.4\%)  \\
+			Jogging    & 1075(24.9\%) \\
+			Downstairs & 357(8.3\%) \\
+			\hline
+			Total & 4321  \\
+			\hline
+		\end{tabular}
+	\end{table}
 
-	\textbf{WISDM}\footnote{http://www.cis.fordham.edu/wisdm/}
+	\vspace{1cm}
+	\medskip\hrule\medskip
+	{\footnotesize $^1$http://www.cis.fordham.edu/wisdm/ \\
+		$^2$http://sipi.usc.edu/HAD/}
+	
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+	\textbf{USC-HAD}$^2$
+	\begin{table}[]
+		\small
+		\label{my-label}
+		\begin{tabular}{|l|c|}
+			\hline
+			Activity & \# objects \\ \hline
+			Standing           & 1167(8.6\%)  \\
+			Elevator-up        & 764(5.6\%)  \\
+			Walking-forward    & 1874(13.8\%) \\
+			Sitting            & 1294(9.5\%)  \\
+			Walking-down & 951(7\%)  \\
+			Sleeping           & 1860(13.7\%) \\
+			Elevator-down        & 763(5.6\%)  \\
+			Walking-upstairs        & 1018(7.4\%)  \\
+			Jumping        & 495(3.6\%)  \\
+			Walking-right        & 1305(9.6\%)  \\
+			Walking-left        & 1280(9.4\%)  \\
+			Running            & 849(6.2\%)  \\ \hline 
+			Total              & 13620                                \\ \hline
+		\end{tabular}
+	\end{table}
+\end{minipage}
+
+\end{frame}
+%--------------------------------------------------------------------------------
+\begin{frame}{Experiment}
 	\begin{itemize}
-		\item \# of objects: 4321
-		\item \# of classes: 6
+		\item datasets: WISDM, USC-HAD;
+		\item feature extraction methods: expert functions, autoregressive models, singular spectral analysis, splines;
+		\item classification models: logistic regression, support vector machine, random forest;
+		\item tuning parameters: cross-validation;
+		\item quality measure: accuracy score.
 	\end{itemize}
-	\textbf{USC-HAD}\footnote{http://sipi.usc.edu/HAD/}
-	\begin{itemize}
-		\item \# of objects: 13620
-		\item \# of classes: 12
-	\end{itemize}
+
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Results}
-
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Results}
+	\begin{table}[]
+		\centering
+		\label{my-label}
+		\begin{tabular}{|l|c|c|c|c|}
+			\hline
+			 & Expert & AutoReg & SSA & Splines\\
+			\hline
+			Log-Reg &    0.668    &    0.651     &   0.637  & 0.415  \\
+			\hline
+			SVM     &    0.797    &     0.655    &   0.822  & 0.740\\
+			\hline
+			RF      &    0.871    &     0.703    &  0.840 & 0.736 \\
+			\hline
+		\end{tabular}
+	\end{table}
 
 \end{frame}
 %--------------------------------------------------------------------------------
@@ -200,7 +265,20 @@
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Conclusion}
-
+	\begin{block}{Done}
+		\begin{itemize}
+			\item different approaches to classification of complex-structured objects were studied
+			\item the results of experiments on human activities datasets outperform many previous methods
+			\item 
+		\end{itemize}
+	\end{block}
+	\begin{block}{Future work}
+		\begin{itemize}
+			\item new approaches to feature extraction (e.g. modified splines)
+			\item implementing of structured learning methods
+		\end{itemize}
+	
+	\end{block}
 \end{frame}
 
 
