@@ -53,6 +53,7 @@
 \setlength\fboxrule{1pt} % Толщина линий рамки \fbox{} 
 \usepackage{wrapfig} % Обтекание рисунков текстом 
 \usepackage{float}
+\usepackage{subfig}
 
 %%% Работа с таблицами 
 \usepackage{array,tabularx,tabulary,booktabs} % Дополнительная работа с таблицами 
@@ -217,11 +218,11 @@ In this project we consider the following ways of generating the feature space~$
 	The equation~\eqref{eq::optimal_description} determines the feature map $h:\mathcal{S} \rightarrow H$.
 \end{itemize}
 
-Given appropriate feature space $H$ and feature map $h$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex stuctured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = h(s_i) \in H$. 
-The function $g(\mathbf{h}, \theta)$ is defined by its parameters vector $\theta \in \Theta$. 
-The optimal parameters~$\widehat{\theta}$ are given by
+Given appropriate feature space $H$ and feature map $h$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = h(s_i) \in H$. 
+The function $g(\mathbf{h}, \bm{\theta})$ is defined by its parameters vector $\bm{\theta} \in \Theta$. 
+The optimal parameters~$\widehat{\bm{\theta}}$ are given by
 \[
-	\widehat{\theta} = \argmin_{\theta} L(g(\cdot, \theta), \mathfrak{D}_H),
+	\widehat{\bm{\theta}} = \argmin_{\bm{\theta}} L(g(\cdot, \bm{\theta}), \mathfrak{D}_H),
 \]
 where $L(\cdot, \cdot)$ is an analogue of the function~\eqref{eq::general_classification_task}.
 
@@ -231,9 +232,9 @@ In our project we consider accelerometer time series as complex objects. Time se
 \]
 where $T$ denotes the length of time series. Now let us expand on different approaches of feature generation.
 
-\section*{Feature generation approaches}
+\section*{Feature generation}
 \subsection*{Expert functions}
-Given a set of complex objects $\{s_i\}_{i=1}^m$ we can extract features in a non-parametric way with a set of expert functions $\{h_i\}_{i=1}^n$. For time series[link], these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. The main drawback of this approach is that we are restricted by our choice of expert functions and for some types of data these functions might be impossible to derive.
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we can extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$. For time series[link], these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. The main drawback of this approach is that we are restricted by our choice of expert functions and for some types of data these functions might be impossible to derive.
 
 \subsection*{Autoregressive model}
 In this method we assume autoregressive model[link] of the order $n$ as a hypothesis for generation of time series $s$. Each component of the object $s$ is a linear combination of the previous $n$ components 
@@ -250,11 +251,74 @@ For this method $n$ is a structural parameter and $\bm{\lambda} = n$.
 Feature description $\mathbf{h}$ of the object $s$ is given by optimal parameters of autoregressive model $\widehat{\mathbf{w}} = \{\widehat{w}_j\}_{j=0}^n$ for time series $s_i$. The hypothesis error function~\eqref{eq::optimal_description} in this case is the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}. 
 
 \begin{equation}
-	\mathbf{h}_i = \widehat{\mathbf{w}} = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} S(s_i, \mathbf{w}, \bm{\lambda}) = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_i - \hat{x}_i\|^2\right).
+	\mathbf{h} = \widehat{\mathbf{w}} = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} S(s, \mathbf{w}, \bm{\lambda}) = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
 	\label{eq::autoregression_description}
 \end{equation}
-The problem~\eqref{eq::autoregression_description} could be easily converted to the linear regression problem. Hence, for each initial time series $s$ we solve linear regression problem.
+The problem~\eqref{eq::autoregression_description} could be easily converted to the linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem.
 
+\subsection*{Singular spectrum analysis}
+Alternative hypothesis for generation of time series is SSA (Singular Spectrum Analysis) model. We construct trajectory matrix for each time series $s=(x_1, \dots x_T)$:
+\[
+	\mathbf{X} = 
+	\begin{pmatrix}
+	x_1 & x_2 & \dots & x_n \\
+	x_2 & x_3 & \dots & x_{n+1} \\
+	\dots & \dots & \dots & \dots \\
+	x_{T-n+1} & x_{T-n+2} & \dots & x_T
+	\end{pmatrix}.
+\]
+Here $n$ is an external structural parameter.
+Let find singular decomposition of matrix $\mathbf{X}^{\T} \mathbf{X}$:
+\[
+	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
+\]
+where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description $\mathbf{h}$ of the object $s$
+\[
+	\mathbf{h} = (\lambda_1, \dots, \lambda_n).
+\]
+\subsection*{Splines}
+
+\section*{Experiment}
+In this paper we consider 2 different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. Data from smart phone accelerometer consists of information about acceleration along each of three axis. Time difference between measurements equals 50 ms. Each time series belongs to one of the activity. The distributions of time series acitivities for each datasets are presented in Table~\ref{tbl::activities_distributions}
+
+\begin{table}
+	\centering
+	\caption{Activities distributions}
+	\subfloat[][WISDM]{\begin{tabular}{l|rr}
+			\hline
+			\textbf{Activity}   & \multicolumn{2}{l}{\textbf{\# objects}} \\
+			\hline
+			Standing   & 229 & 5.3\% \\
+			Walking    & 1917 & 44.4\%\\
+			Upstairs   & 466 &10.8\%\\
+			Sitting    & 277  &6.4\%\\
+			Jogging    & 1075 &24.9\%\\
+			Downstairs & 357 &8.3\%\\
+			\hline
+		Total & \multicolumn{2}{l}{4321}  \\
+		\hline
+	\end{tabular}}
+	\qquad
+	\subfloat[][USC-HAD]{\begin{tabular}{l|rr}
+		\hline
+		\textbf{Activity} & \multicolumn{2}{l}{\textbf{\# objects}} \\ \hline
+		Walking-downstairs & 951 & 7\%  \\
+		Walking-upstairs        & 1018&7.4\%  \\
+		Walking-forward    & 1874&13.8\% \\
+		Walking-right        & 1305&9.6\%  \\
+		Walking-left        & 1280&9.4\%  \\
+		Elevator-up        & 764&5.6\% \\
+		Elevator-down        & 763&5.6\%  \\
+		Standing           & 1167&8.6\%  \\
+		Sitting            & 1294&9.5\%  \\
+		Sleeping           & 1860&13.7\% \\
+		Jumping        & 495&3.6\%  \\
+		Running            & 849&6.2\%  \\ \hline 
+		Total              & \multicolumn{2}{l}{13620}\\ 
+		\hline
+	\end{tabular}}
+	\label{tbl::activities_distributions}
+\end{table}
 
 \bibliographystyle{unsrt}
 \bibliography{ref.bib}
