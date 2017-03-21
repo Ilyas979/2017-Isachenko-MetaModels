@@ -27,6 +27,7 @@
 \renewcommand{\ge}{\ensuremath{\geqslant}} 
 \renewcommand{\geq}{\ensuremath{\geqslant}} 
 \renewcommand{\emptyset}{\varnothing} 
+\newcommand{\T}{{\text{\footnotesize\sffamily\upshape\mdseries T}}}
 
 
 %%% ƒополнительна€ работа с математикой 
@@ -132,24 +133,24 @@
 \author
 {Ilya Zharikov, Roman Isachenko, Artem Bochkarev} 
 \title 
-{Generative models for human activity recognition}
+{Metamodels for complex structured objects classification}
 \date{}
 
 \begin{document} 
 \maketitle
 
 \section*{Introduction}
-This project is dedicated to multiclass classification of complex-structured objects (for which we don't have explicit features). 
+This project is dedicated to multiclass classification of complex structured objects (for which we don't have explicit features). 
 The problem arises in many applications such as image recognition, signal processing or time series classification. 
 We will focus on multiclass multivariate time series classification. 
-In this setup time series are regarded as complex-structured objects without explicit feature description. 
-This is reasonable because we can't operate with original features as time series might be of different size and not aligned \cite{geurts2001pattern}.
+In this setup time series are regarded as complex structured objects without explicit feature description. 
+This is reasonable because we can't operate with original features as time series might be of different size, not aligned \cite{geurts2001pattern} or even multiscaled.
 
 We investigate classification of accelerometer time series \cite{wang2014human}. The data is time series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. 
 The task is to predict the activity a person is performing. 
 List of activities might include walking, running, sitting or walking up/down the stairs.
 
-In general the problem of classifying complex-structured objects can be split in two distinctive procedures. 
+In general the problem of classifying complex structured objects can be split in two distinctive procedures. 
 First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. 
 For simplicity, we assume that these two procedures can be built and analyzed separately. 
 In our project we focused mainly on comparing different methods of feature generation \cite{karasikov24feature, ivkin}. 
@@ -169,7 +170,7 @@ In the first part of these report we give definitions and make problem statement
 Last, we make the experiment on real accelerometer datasets \cite{wisdm, usc}, compare all methods and give conclusions and recommendations for practical use.
 
 \section*{Problem Statement}
-Let $\mathcal{S}$ be a space of complex-structured objects, $Y$ is a finite set of class labels. 
+Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
 Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$~-- given sample, where $s_i \in \mathcal{S}$ and $y_i \in Y$.
 
 We consider the problem of recovering the function $f: \mathcal{S} \rightarrow Y$
@@ -179,17 +180,17 @@ We consider the problem of recovering the function $f: \mathcal{S} \rightarrow Y
 Let $L(f, \mathfrak{D})$ be an error function which expresses the classification error of the function $f$ over the sample $\mathfrak{D}$. 
 Our goal is to determine function $f^*$ which minimizes the error
 \begin{equation}
-	f^* = \arg \min_{f} L(f, \mathfrak{D}).
+	f^* = \argmin_{f} L(f, \mathfrak{D}).
 	\label{eq::general_classification_task}
 \end{equation}
 
 We assume that the target function $f^*$ belongs to the class of function compositions $f = g \circ h$, where
 \begin{itemize}
 	\item 
-	$h: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \in \mathbb{R}^n$;
+	$h: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \mathbb{R}^n$;
 	\item 
-	$g: H \times \Theta \rightarrow Y$ is a parametric map from feature space $H$ to the space of class labels $Y$. 
-	The function $g$ is parametrized by a vector parameter $\theta \in \Theta$. 
+	$g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the space of class labels $Y$. 
+	The function $g$ is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
 \end{itemize}
 
 The determining of the function $f^*$ is equivalent to determining the functions $h^*$ and  $g^*$.
@@ -198,7 +199,7 @@ In this project we consider the following ways of generating the feature space~$
 \begin{itemize}
 	\item 
 	expert functions based on prior knowledge of the original objects. 
-	These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$.
+	These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$, where $h_i: \mathcal{S} \rightarrow \mathbb{R}$.
 	Thus, the description $\mathbf{h}$ of the object $s$ is the value of these statistics on the object 
 	\[
 		\mathbf{h} = h(s) = (h_1(s), \dots, h_n(s)).
@@ -206,48 +207,53 @@ In this project we consider the following ways of generating the feature space~$
 	\item 
 	hypothesis of data generation. 
 	In this case the features are the estimated parameters of the considered hypothesis. 
-	Let $S(s, \mathbf{h}, \mathbf{\lambda})$ be the error function which specifies the hypothesis, e.g. one could define the function $S$ as negative log-likelihood function [to do link]. 
+	Let $S(s, \mathbf{h}, \boldsymbol{\lambda})$ be the error function which specifies the hypothesis, e.g. one could define the function $S$ as negative log-likelihood function [to do link]. 
 	The optimal parameters $\widehat{\mathbf{h}}$ for object $s$ is obtained by
 	\begin{equation}
-		\widehat{\mathbf{h}} = \arg \min_{\mathbf{h}} S( s, \mathbf{h}, \bm{\lambda}).
+		\widehat{\mathbf{h}} = \argmin_{\mathbf{h}} S( s, \mathbf{h}, \bm{\lambda}).
 		\label{eq::optimal_description}
 	\end{equation}
 	The parameter $\bm{\lambda}$ is external structural parameter for the function $S$.
 	The equation~\eqref{eq::optimal_description} determines the feature map $h:\mathcal{S} \rightarrow H$.
 \end{itemize}
 
-Given appropriate feature space $H$ and feature map $h$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ to the $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = h(s_i)$. 
+Given appropriate feature space $H$ and feature map $h$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex stuctured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = h(s_i) \in H$. 
 The function $g(\mathbf{h}, \theta)$ is defined by its parameters vector $\theta \in \Theta$. 
 The optimal parameters~$\widehat{\theta}$ are given by
 \[
-	\widehat{\theta} = \arg \min_{\theta} L(g(\cdot, \theta), \mathfrak{D}_H),
+	\widehat{\theta} = \argmin_{\theta} L(g(\cdot, \theta), \mathfrak{D}_H),
 \]
 where $L(\cdot, \cdot)$ is an analogue of the function~\eqref{eq::general_classification_task}.
 
-In our project we consider accelerometer time series as a complex objects. Time series is represented in following way:
+In our project we consider accelerometer time series as complex objects. Time series is represented in following way:
 \[
-	s_i = \{x_1, \cdots, x_T\},
+	s = (x_1, \dots, x_T) \in \mathcal{S},
 \]
 where $T$ denotes the length of time series. Now let us expand on different approaches of feature generation.
 
 \section*{Feature generation approaches}
 \subsection*{Expert functions}
-Given a set of complex objects $\{s_i\}_{i=1}^m$ we can extract features in a non-parametric way with a set of expert functions $\{h_i\}_{i=1}^n$. For time series, these functions could be mean, standard deviations, mean average deviations ans distributions of the values. The main drawback of this approach is that we are restricted by our choice of expert functions and for some types of data these functions might be impossible to derive.
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we can extract features in a non-parametric way with a set of expert functions $\{h_i\}_{i=1}^n$. For time series[link], these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. The main drawback of this approach is that we are restricted by our choice of expert functions and for some types of data these functions might be impossible to derive.
 
-\subsection*{Model of autoregression}
-In this method we assume autoregressive model of the order $n$ as a hypothesis for generation of time series $s$. Here, $n$ is a structural parameter and $\bm{\lambda} = n$. We have
+\subsection*{Autoregressive model}
+In this method we assume autoregressive model[link] of the order $n$ as a hypothesis for generation of time series $s$. Each component of the object $s$ is a linear combination of the previous $n$ components 
 \begin{equation*}
-	x_t = \theta_0 + \sum_{j=1}^{n} \theta_i x_{t-j} + \epsilon_t.
+	x_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j} + \epsilon_t,
 \end{equation*}
-Optimal parameters of autoregressive model $\bm{\hat{\theta}}_i = \mathbf{h}_i$ for time series $s_i$ are found by minimizing mean squared error:
-\begin{equation*}
-	\mathbf{h}_i = \argmin_{\bm{\theta} \in \Theta} S(s_i, \bm{\theta}, \bm{\lambda}) = \argmin_{\bm{\theta} \in \Theta} \big( \sum_{t=1}^{T} \|x_i - \hat{x}_i\|\big),
-\end{equation*}
-where
-\begin{equation*}
-	\hat{x}_i = \theta_0 + \sum_{j=1}^{n} \theta_i x_{t-j}.
-\end{equation*}
+where $\epsilon_t$ is a random noise. Prediction of the autoregressive model is defined by
+\begin{equation}
+	\hat{x}_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j}.
+	\label{eq::autoregression_prediction}
+\end{equation}
+For this method $n$ is a structural parameter and $\bm{\lambda} = n$. 
 
+Feature description $\mathbf{h}$ of the object $s$ is given by optimal parameters of autoregressive model $\widehat{\mathbf{w}} = \{\widehat{w}_j\}_{j=0}^n$ for time series $s_i$. The hypothesis error function~\eqref{eq::optimal_description} in this case is the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}. 
+
+\begin{equation}
+	\mathbf{h}_i = \widehat{\mathbf{w}} = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} S(s_i, \mathbf{w}, \bm{\lambda}) = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_i - \hat{x}_i\|^2\right).
+	\label{eq::autoregression_description}
+\end{equation}
+The problem~\eqref{eq::autoregression_description} could be easily converted to the linear regression problem. Hence, for each initial time series $s$ we solve linear regression problem.
 
 
 \bibliographystyle{unsrt}
