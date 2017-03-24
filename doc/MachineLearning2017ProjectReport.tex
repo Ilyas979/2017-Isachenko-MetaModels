@@ -268,7 +268,7 @@ Alternative hypothesis for generation of time series is SSA (Singular Spectrum A
 	x_{T-n+1} & x_{T-n+2} & \dots & x_T
 	\end{pmatrix}.
 \]
-Here $n$ is an external structural parameter.
+Here $n$, called the window width, is an external structural parameter.
 Let find singular decomposition of matrix $\mathbf{X}^{\T} \mathbf{X}$:
 \[
 	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
@@ -341,16 +341,23 @@ For new objects we can make a prediction
 \subsection*{Random Forest}
 {\color{red} TO DO}
 
-\subsection*{\color{red} TO DO}
+\subsection*{\color{red} TO DO section}
 \begin{itemize}
 	\item the function $h$ is vectorial (discuss notations);
 	\item add explanation(pics) of autoregressive model;
 	\item splines;
-	\item ts example pic.
+	\item add literature;
+	\item fix the literature style.
 \end{itemize}
 
 \section*{Experiment}
-In this paper we consider 2 different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. Data from smart phone accelerometer consists of information about acceleration along each of three axis. Time difference between measurements equals 50 ms. Each time series belongs to one activity. The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}.
+In this paper we consider 2 different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
+Data from smart phone accelerometer consists of information about acceleration along each of three axis. 
+Time difference between measurements equals 50 ms. 
+Each time series belongs to one activity. 
+The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}. 
+The length of each time series equals 200 which accounts 10 second. 
+In the Figure~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
 
 \begin{table}[H]
 	\centering
@@ -393,17 +400,39 @@ In this paper we consider 2 different smart phone based datasets: WISDM~\cite{wi
 	\label{tbl::activities_distributions}
 \end{table}
 
+\begin{figure}[h]
+	\centering
+	\label{fig::ts_example}
+	\includegraphics[width=1\linewidth]{Presentation/ts_example.png}
+	\caption{Time series example}
+\end{figure}
+
 For each dataset we applied the feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
 We used three different widely used classification model for each generated feature description: logistic regression, support vector machine and random forest. 
-The external structural parameters for feature generation procedures,  such as the length $n$ for autoregression and the window width $n$ for SSA, {\color{red} !params for splines!}, were tuned using cross validation procedure. 
-The hyperparameters for classification models were also tuned using cross validation procedure. 
+The external structural parameters for feature generation procedures,  such as the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using 3-fold cross validation procedure. 
+The hyperparameters for classification models were also tuned using the same cross validation procedure. 
 
-Expert functions for time series {\color{red} TO DO}. 
+In paper~\cite{kwapisz2011activity} the authors proposed to use the following expert functions for time series classification:
+\begin{itemize}
+	\item (3) average acceleration for each axis;
+	\item (3) standard deviation for each axis;
+	\item (3) average absolute difference for each axis;
+	\item (1) average resultant acceleration;
+	\item (30) values of histogram with 10 bins for each axis.
+\end{itemize}
 Autoregressive parameters + SSA {\color{red} TO DO}.
 
-We fit splines for time series using $scipy$~{\color{red} [link]} python library. The spline order equals 3. The knots $\{\xi_{\ell}\}_{\ell = 1}^L$ for  splines were distributed uniformly. The number $L$ were chosen implicitly by fitting smoothing parameter~$s$, it is possible because $L \sim \frac{1}{s}$. The fitting was constructed as follows. Firstly, there was the initialization step to find appropriate bounds for smoothing parameter. The next step is finding the smoothing parameter in this interval using bi-search approach.
+We fit splines for time series using $scipy$~{\color{red} [link]} python library. The spline order equals 3. The knots $\{\xi_{\ell}\}_{\ell = 1}^L$ for  splines were distributed uniformly. The number~$L$ were chosen implicitly by fitting smoothing parameter~$s$, it is possible because $L \sim \frac{1}{s}$. The fitting was constructed as follows. Firstly, there was the initialization step to find appropriate bounds for smoothing parameter. The next step is finding the smoothing parameter in this interval using bi-search approach.
 
-The results of the experiments for the both datasets is presented in Figure~\ref{pic::accuracy_results}.
+The number of features for each method are
+\begin{itemize}
+	\item expert features: 40;
+	\item autoregressive model: 63;
+	\item singular spectrum analysis: 60;
+	\item splines: 33.
+\end{itemize}
+
+The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result is obtained by splines parameters. The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results is highly depend on the classification model. For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
 
 \begin{figure}[h]
 	\centering
@@ -412,10 +441,10 @@ The results of the experiments for the both datasets is presented in Figure~\ref
 	\subfloat{
 	\includegraphics[width=0.49\linewidth]{presentation/uschad_methods.png}}
 	\caption{Accuracy scores}
-	\label{pic::accuracy_results}
+	\label{fig::accuracy_results}
 \end{figure}
 
-We also carried out the experiment for union of all generated features. 
+We also carried out the experiment for union of all 196 generated features. 
 
 \begin{table}[!h]
 	\centering
@@ -430,6 +459,14 @@ We also carried out the experiment for union of all generated features.
 		\hline 
 	\end{tabular}
 \end{table}
+
+\section*{Conclusion}
+
+The problem of complex structured objects classification were considered. 
+We investigated the different approaches of feature extraction, particularly the expert functions and data generation hypothesis. 
+The experiment on the real data from smart phone accelerometer were carried out. 
+We compared different feature descriptions and different classification models. 
+The results show that obtained features allows to recover the class label with the high quality.
 
 \bibliographystyle{unsrt}
 \bibliography{ref.bib}
