@@ -129,6 +129,7 @@
 \usepackage{tikz} % Работа с графикой 
 \usepackage{pgfplots} 
 \usepackage{pgfplotstable} 
+\usepackage{bbm}
 
 
 \author
@@ -289,9 +290,56 @@ The feature description of the time series could be assumed as union of these pa
 	\bm{h} = h(s) = (\xi_1, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L-1}).
 \]
 
-\subsection*{Classification}
+\section*{Classification}
+In this section we will describe our approach to classification of time series using newly generated feature. We use three different classification models: logistic regression, SVM and random forests.
 
-{\color{red} describe accuracy score}
+\subsection*{Quality measure}
+We chose accuracy score as our main quality measure function. We did that because this approach was used in previous articles \cite{karasikov24feature, ivkin} and this measure is easy to understand. Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
+
+\begin{equation*}
+	\textrm{accuracy}(y, \hat{y}) = \frac{1}{m} \sum_{i=1}^{m} \mathbbm{1} (y_i = \hat{y}_i),
+\end{equation*}
+
+where $\hat{y}_i$ is a prediction of the classifier. We calculated this measure for binary case (when we predict each class in particular) and in multilabel case.
+
+\subsection*{Multiclass classification}
+As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
+
+\subsection*{Logistic regression}
+The first approach to classification we played with was regularized logistic regression. We seek to minimize the following loss function:
+
+\begin{equation*}
+	L(\bm{\theta}) = \sum_{i=1}^{m} \log(1 + \exp(-(\bm{\theta}^T\mathbf{h}_i)y_i)) + \frac{\lambda}{2} \|\bm{\theta}\|^2
+\end{equation*}
+
+\begin{equation*}
+	\bm{\theta}^* = \argmin_{\mathbb{\theta}} L(\bm{\theta}) 
+\end{equation*}
+
+We make a prediction for a new object in a following way:
+\begin{equation*}
+	\hat{y} = \sgn (\bm{\theta}^T \mathbf{h})
+\end{equation*}
+
+\subsection*{SVM}
+We also used classical binary SVM. The problem in this case can be formulated in a following way:
+
+\begin{align*}
+	\bm{\theta^*}  = \begin{pmatrix}
+	\mathbf{w}\\ b\\ \bm{\xi}
+	\end{pmatrix}= \argmin_{\mathbf{w}^*, b^*, \bm{\xi}^*}  &\frac{1}{2} \|\mathbf{w}\|^2 + C\sum_{i=1}^{m} \xi_i\\
+	\textrm{s.t.} \quad &y_i(\mathbf{w}^T \mathbf{h}_i + b) \geq 1 - \xi_i\\
+	&\xi_i \geq 0, \quad 1 \leq i \leq m.
+\end{align*}
+ 
+For new objects we can make a prediction 
+
+\begin{equation*}
+\hat{y} = \sgn (\mathbf{w}^T \mathbf{h} + b)
+\end{equation*}
+
+\subsection*{Random Forest}
+{\color{red} TO DO}
 
 \subsection*{\color{red} TO DO}
 \begin{itemize}
@@ -304,7 +352,7 @@ The feature description of the time series could be assumed as union of these pa
 \section*{Experiment}
 In this paper we consider 2 different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. Data from smart phone accelerometer consists of information about acceleration along each of three axis. Time difference between measurements equals 50 ms. Each time series belongs to one activity. The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Activities distributions}
 	\subfloat[WISDM]{
