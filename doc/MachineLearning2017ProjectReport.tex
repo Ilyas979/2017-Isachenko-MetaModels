@@ -48,7 +48,6 @@
 
 %%% Работа с картинками 
 \usepackage{graphicx} % Для вставки рисунков 
-\graphicspath{{images/}{images2/}} % папки с картинками 
 \setlength\fboxsep{3pt} % Отступ рамки \fbox{} от рисунка 
 \setlength\fboxrule{1pt} % Толщина линий рамки \fbox{} 
 \usepackage{wrapfig} % Обтекание рисунков текстом 
@@ -363,38 +362,39 @@ In the Figure~\ref{fig::ts_example} the example of the time series for one activ
 	\centering
 	\caption{Activities distributions}
 	\subfloat[WISDM]{
-		\begin{tabular}{l|rr}
+		\begin{tabular}{r|l|rr}
 				\hline
-				\textbf{Activity}   & \multicolumn{2}{l}{\textbf{\# objects}} \\
+				&\textbf{Activity}   & \multicolumn{2}{l}{\textbf{\# objects}} \\
 				\hline
-				Standing   & 229 & 5.3\% \\
-				Walking    & 1917 & 44.4\%\\
-				Upstairs   & 466 &10.8\%\\
-				Sitting    & 277  &6.4\%\\
-				Jogging    & 1075 &24.9\%\\
-				Downstairs & 357 &8.3\%\\
+				1&Standing            &229      &5.30  \% \\
+				2&Walking             &1917     &44.36 \% \\
+				3&Upstairs            &466      &10.78 \% \\
+				4&Sitting             &277      &6.41  \% \\
+				5&Jogging             &1075     &24.88 \% \\
+				6&Downstairs          &357      &8.26  \% \\
 				\hline
-			Total & \multicolumn{2}{l}{4321}  \\
+			&Total & \multicolumn{2}{l}{4321}  \\
 			\hline
 		\end{tabular}}
-	\qquad
+	\hspace{0.5cm}
 	\subfloat[USC-HAD]{
-		\begin{tabular}{l|rr}
+		\begin{tabular}{r|l|rr}
 			\hline
-			\textbf{Activity} & \multicolumn{2}{l}{\textbf{\# objects}} \\ \hline
-			Walking-downstairs & 951 & 7\%  \\
-			Walking-upstairs        & 1018&7.4\%  \\
-			Walking-forward    & 1874&13.8\% \\
-			Walking-right        & 1305&9.6\%  \\
-			Walking-left        & 1280&9.4\%  \\
-			Elevator-up        & 764&5.6\% \\
-			Elevator-down        & 763&5.6\%  \\
-			Standing           & 1167&8.6\%  \\
-			Sitting            & 1294&9.5\%  \\
-			Sleeping           & 1860&13.7\% \\
-			Jumping        & 495&3.6\%  \\
-			Running            & 849&6.2\%  \\ \hline 
-			Total              & \multicolumn{2}{l}{13620}\\ 
+			&\textbf{Activity} & \multicolumn{2}{l}{\textbf{\# objects}} \\ \hline
+			1&Standing            &1167     &8.57  \% \\
+			2&Elevator-up         &764      &5.61  \% \\
+			3&Walking-forward     &1874     &13.76 \% \\
+			4&Sitting             &1294     &9.50  \% \\
+			5&Walking-downstairs  &951      &6.98  \% \\
+			6&Sleeping            &1860     &13.66 \% \\
+			7&Elevator-down       &763      &5.60  \% \\
+			8&Walking-upstairs    &1018     &7.47  \% \\
+			9&Jumping             &495      &3.63  \% \\
+			10&Walking-right       &1305     &9.58  \% \\
+			11&Walking-left        &1280     &9.40  \% \\
+			12&Running             &849      &6.23  \% \\
+			\hline 
+			&Total              & \multicolumn{2}{l}{13620}\\ 
 			\hline
 		\end{tabular}}
 	\label{tbl::activities_distributions}
@@ -444,21 +444,25 @@ The results of the experiments for the both datasets is presented in Figure~\ref
 	\label{fig::accuracy_results}
 \end{figure}
 
-We also carried out the experiment for union of all 196 generated features. 
+We also carried out the experiment for union of all $196$ generated features. The results are demonstrated on the Figure~\ref{fig::feature_union_results}. In the Table~\ref{tbl::activities_distributions} one can see class labels, that are represented on the corresponding histograms.
 
-\begin{table}[!h]
+\begin{figure}[h]
 	\centering
-	\label{tbl::wisdm_union}
-	\caption{Accuracy scores for WISDM dataset, all features}
-	\begin{tabular}{c|c|c|c|c|c|c}
-		\hline 
-		 All	& Standing & Walking & Upstairs & Sitting & Jogging & Downstairs \\
-		\hline
-		 0.983 & 0.995 & 0.993 & 0.993 & 0.995 & 0.997 & 0.993 \\
-
-		\hline 
-	\end{tabular}
-\end{table}
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_lr_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_lr_all.png}}\\
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_rf_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_rf_all.png}}\\
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_svm_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_svm_all.png}}\\
+	\caption{Accuracy scores of classification of each class using all features}
+	\label{fig::feature_union_results}
+\end{figure}
 
 \section*{Conclusion}
 
