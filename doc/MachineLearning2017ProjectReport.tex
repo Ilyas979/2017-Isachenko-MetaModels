@@ -330,21 +330,21 @@ The first approach to classification we played with was regularized logistic reg
 \end{equation*}
 
 \begin{equation*}
-	\bm{\theta}^* = \argmin_{\mathbb{\theta}} L(\bm{\theta}) 
+	\bm{\hat{\theta}} = \argmin_{\mathbb{\theta}} L(\bm{\theta}) 
 \end{equation*}
 
 We make a prediction for a new object in a following way:
 \begin{equation*}
-	\hat{y} = \sgn (\bm{\theta}^T \mathbf{h})
+	\hat{y} = \sgn (\bm{\hat{\theta}}^T \mathbf{h})
 \end{equation*}
 
 \subsection*{SVM}
 We also used classical binary SVM. The problem in this case can be formulated in a following way:
 
 \begin{align*}
-	\bm{\theta^*}  = \begin{pmatrix}
-	\mathbf{w}\\ b\\ \bm{\xi}
-	\end{pmatrix}= \argmin_{\mathbf{w}^*, b^*, \bm{\xi}^*}  &\frac{1}{2} \|\mathbf{w}\|^2 + C\sum_{i=1}^{m} \xi_i\\
+	\bm{\hat{\theta}}  = \begin{pmatrix}
+	\mathbf{\hat{w}}\\ \hat{b}\\ \bm{\hat{\xi}}
+	\end{pmatrix}= \argmin_{\mathbf{w}, b, \bm{\xi}}  &\frac{1}{2} \|\mathbf{w}\|^2 + C\sum_{i=1}^{m} \xi_i\\
 	\textrm{s.t.} \quad &y_i(\mathbf{w}^T \mathbf{h}_i + b) \geq 1 - \xi_i\\
 	&\xi_i \geq 0, \quad 1 \leq i \leq m.
 \end{align*}
@@ -352,11 +352,17 @@ We also used classical binary SVM. The problem in this case can be formulated in
 For new objects we can make a prediction 
 
 \begin{equation*}
-\hat{y} = \sgn (\mathbf{w}^T \mathbf{h} + b)
+\hat{y} = \sgn (\mathbf{\hat{w}}^T \mathbf{h} + b)
 \end{equation*}
 
 \subsection*{Random Forest}
-{\color{red} TO DO}
+Random forest is an algorithm which exploits the idea of bagging. This is an approach of building many random weak classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of single trees:
+
+\begin{equation*}
+	\hat{y}_i = \frac{1}{B} \sum_{i=1}^{B} g(\mathbf{h}_i),
+\end{equation*}
+
+where $B$ is an amount of trees used for bagging.
 
 \subsection*{\color{red} TO DO section}
 \begin{itemize}
