@@ -93,8 +93,8 @@
 % \cfoot{Нижний в центре} % По умолчанию здесь номер страницы 
 
 \usepackage{setspace} % Интерлиньяж 
-\onehalfspacing % Интерлиньяж 1.5 
-%\doublespacing % Интерлиньяж 2 
+%\onehalfspacing % Интерлиньяж 1.5 
+\doublespacing % Интерлиньяж 2 
 %\singlespacing % Интерлиньяж 1
 \setlength{\parindent}{1cm}
 
@@ -164,89 +164,105 @@ We consider this approach a baseline, as it is the simplest method we use.
 We compare baseline with more sophisticated parametric feature generation methods. 
 One of them is autoregressive model \cite{lukashin2003adaptive}. 
 For each time series we build parametric model and use those parameters as features for classification. 
-We also consider the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
-We use eigenvalues of trajectory matrix as features for building classifier.
+The next approach is  the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
+We use eigenvalues of trajectory matrix as features for building classifier. 
+Finally, we consider the parameters of the splines as the feature description  of time series.
 
 In the first part of these report we give definitions and make problem statement. In the second part we describe all of the proposed approaches in more detail. 
 Last, we make the experiment on real accelerometer datasets \cite{wisdm, usc}, compare all methods and give conclusions and recommendations for practical use.
 
 \section*{Problem Statement}
 Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
-Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$~-- given sample, where $s_i \in \mathcal{S}$ and $y_i \in Y$.
+Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$ a given sample, where $s_i \in \mathcal{S}$ and $y_i \in Y$.
 
 We consider the problem of recovering the function $f: \mathcal{S} \rightarrow Y$
 \[
 	y = f(s).
 \]
 Let $L(f, \mathfrak{D})$ be an error function which expresses the classification error of the function $f$ over the sample $\mathfrak{D}$. 
-Our goal is to determine function $f^*$ which minimizes the error
+The goal is to determine function $f^*$ which minimizes the error
 \begin{equation}
 	f^* = \argmin_{f} L(f, \mathfrak{D}).
 	\label{eq::general_classification_task}
 \end{equation}
 
-We assume that the target function $f^*$ belongs to the class of function compositions $f = g \circ h$, where
+We assume that the target function $f^*$ belongs to the class of function compositions $f = g \circ \bm{h}$, where
 \begin{itemize}
 	\item 
-	$h: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \mathbb{R}^n$;
+	$\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \mathbb{R}^n$;
 	\item 
 	$g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the space of class labels $Y$. 
 	The function $g$ is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
 \end{itemize}
 
-The determining of the function $f^*$ is equivalent to determining the functions $h^*$ and  $g^*$.
+The determining of the function $f^*$ is equivalent to determining the functions $\bm{h}^*$ and  $g^*$.
 
-In this project we consider the following ways of generating the feature space~$H$:
+In this paper we consider the following ways of generating the feature space~$H$:
 \begin{itemize}
 	\item 
 	expert functions based on prior knowledge of the original objects. 
 	These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$, where $h_i: \mathcal{S} \rightarrow \mathbb{R}$.
-	Thus, the description $\mathbf{h}$ of the object $s$ is the value of these statistics on the object 
+	Thus, the description $\bm{h}^*(s)$ of the object $s$ is the value of these statistics on the object 
 	\[
-		\mathbf{h} = h(s) = (h_1(s), \dots, h_n(s)).
+		\bm{h}^*(s) = (h_1(s), \dots, h_n(s)).
 	\]
 	\item 
 	hypothesis of data generation. 
 	In this case the features are the estimated parameters of the considered hypothesis. 
-	Let $S(s, \mathbf{h}, \boldsymbol{\lambda})$ be the error function which specifies the hypothesis, e.g. one could define the function $S$ as negative log-likelihood function [to do link]. 
-	The optimal parameters $\widehat{\mathbf{h}}$ for object $s$ is obtained by
+	Let $S(s, \bm{h}, \boldsymbol{\lambda})$ be the error function which specifies the hypothesis, e.g. one could define the function $S$ as negative log-likelihood function~\cite{bishop2006pattern}. 
+	The optimal feature map $\bm{h}^*(s)$ is obtained by
 	\begin{equation}
-		\widehat{\mathbf{h}} = \argmin_{\mathbf{h}} S( s, \mathbf{h}, \bm{\lambda}).
+		\bm{h}^*(s) = \argmin_{\bm{h}} S( s, \bm{h}, \bm{\lambda}).
 		\label{eq::optimal_description}
 	\end{equation}
 	The parameter $\bm{\lambda}$ is external structural parameter for the function $S$.
-	The equation~\eqref{eq::optimal_description} determines the feature map $h:\mathcal{S} \rightarrow H$.
+	The equation~\eqref{eq::optimal_description} determines the feature map $\bm{h}^*$ for each object $s \in \mathcal{S}$.
 \end{itemize}
 
-Given appropriate feature space $H$ and feature map $h$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = h(s_i) \in H$. 
-The function $g(\mathbf{h}, \bm{\theta})$ is defined by its parameters vector $\bm{\theta} \in \Theta$. 
-The optimal parameters~$\widehat{\bm{\theta}}$ are given by
-\[
-	\widehat{\bm{\theta}} = \argmin_{\bm{\theta}} L(g(\cdot, \bm{\theta}), \mathfrak{D}_H),
-\]
-where $L(\cdot, \cdot)$ is an analogue of the function~\eqref{eq::general_classification_task}.
+Given appropriate feature space $H$ and feature map $\bm{h}$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = \bm{h}(s_i) \in H$. 
+The function $g(\mathbf{h}, \bm{\theta})$ is defined by its parameter vector $\bm{\theta} \in \Theta$. 
+The optimal parameters~$\bm{\theta}^*$ are given by
+\begin{equation}
+	\bm{\theta}^* = \argmin_{\bm{\theta}} L(\bm{\theta}, \mathfrak{D}_H, \bm{\mu}),
+	\label{eq::optimal_classification_params}
+\end{equation}
+where $L(\cdot, \cdot, \cdot)$ is an analogue of the function~\eqref{eq::general_classification_task}. Here the vector $\bm{\mu}$ is a external parameters of the particular classification model.
 
-In our project we consider accelerometer time series as complex objects. Time series is represented in following way:
+In our project we consider accelerometer time series as complex structured objects. Time series is represented in the following way:
 \[
 	s = (x_1, \dots, x_T) \in \mathcal{S},
 \]
-where $T$ denotes the length of time series. Now let us expand on different approaches of feature generation.
+where $T$ denotes the length of time series. Now let us expand on different approaches for feature generation.
 
 \section*{Feature generation}
-\subsection*{Expert functions}
-Given a set of complex objects $\{s_i\}_{i=1}^m$ we can extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$. For time series~{\color{red} ![link]}, these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. The main drawback of this approach is that we are restricted by our choice of expert functions and for some types of data these functions might be impossible to derive.
+\subsubsection*{Expert functions}
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$. 
+For time series, these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. 
+The main drawback of this approach is that we are restricted by our choice of the expert functions and these functions might be impossible to derive for some types of data.
 
-\subsection*{Autoregressive model}
-In this method we assume autoregressive model~{\color{red} ![link]} of the order $n$ as a hypothesis for generation of time series $s$. Each component of the object $s$ is a linear combination of the previous $n$ components 
+\subsubsection*{Autoregressive model}
+In this method we assume autoregressive model~\cite{lukashin2003adaptive} of the order $n$ as a hypothesis for generation of time series $s$. 
+Each component of the object $s$ is assumed as a linear combination of the previous $n$ components 
 \begin{equation*}
 	x_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j} + \epsilon_t,
 \end{equation*}
-where $\epsilon_t$ is a random noise. Prediction of the autoregressive model is defined by
+where $\epsilon_t$ is a random noise. 
+Prediction of the autoregressive model is defined by
 \begin{equation}
 	\hat{x}_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j}.
 	\label{eq::autoregression_prediction}
 \end{equation}
-For this method $n$ is a structural parameter and $\bm{\lambda} = n$. The example of approximation using autoregressive model is demonstrated on the Figure~\ref{fig::ar_example}.
+For this method $n$ is a structural parameter and $\bm{\lambda} = n$. 
+
+Feature map $\bm{h}(s)$ is given by optimal parameters of autoregressive model $\mathbf{w}^* = \{w^*_j\}_{j=0}^n$ for time series $s$. 
+The hypothesis error function~\eqref{eq::optimal_description} in this case is the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}. 
+
+\begin{equation}
+	\bm{h}(s) = \mathbf{w}^* = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} S(s, \mathbf{w}, \bm{\lambda}) = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
+	\label{eq::autoregression_description}
+\end{equation}
+The problem~\eqref{eq::autoregression_description} could be easily converted to the linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
+The example of approximation using autoregressive model is demonstrated on the Figure~\ref{fig::ar_example}.
 
 \begin{figure}[h]
 	\centering
@@ -255,17 +271,8 @@ For this method $n$ is a structural parameter and $\bm{\lambda} = n$. The exampl
 	\label{fig::ar_example}
 \end{figure}
 
-
-Feature description $\mathbf{h}$ of the object $s$ is given by optimal parameters of autoregressive model $\widehat{\mathbf{w}} = \{\widehat{w}_j\}_{j=0}^n$ for time series $s_i$. The hypothesis error function~\eqref{eq::optimal_description} in this case is the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}. 
-
-\begin{equation}
-	\mathbf{h} = \widehat{\mathbf{w}} = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} S(s, \mathbf{w}, \bm{\lambda}) = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
-	\label{eq::autoregression_description}
-\end{equation}
-The problem~\eqref{eq::autoregression_description} could be easily converted to the linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem.
-
-\subsection*{Singular spectrum analysis}
-Alternative hypothesis for generation of time series is SSA (Singular Spectrum Analysis) model. We construct trajectory matrix for each time series $s=(x_1, \dots x_T)$:
+\subsubsection*{Singular spectrum analysis}
+Alternative hypothesis for generation of time series is SSA (Singular Spectrum Analysis) model~\cite{hassani2007singular}. We construct trajectory matrix for each time series $s=(x_1, \dots x_T)$:
 \[
 	\mathbf{X} = 
 	\begin{pmatrix}
@@ -276,76 +283,82 @@ Alternative hypothesis for generation of time series is SSA (Singular Spectrum A
 	\end{pmatrix}.
 \]
 Here $n$, called the window width, is an external structural parameter.
-Let find singular decomposition of matrix $\mathbf{X}^{\T} \mathbf{X}$:
+Let find the singular decomposition~\cite{golub1970singular} of the matrix $\mathbf{X}^{\T} \mathbf{X}$:
 \[
 	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
 \]
-where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description $\mathbf{h}$ of the object $s$
+where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description of the object $s$
 \[
-	\mathbf{h} = (\lambda_1, \dots, \lambda_n).
+	\bm{h}(s) = (\lambda_1, \dots, \lambda_n).
 \]
-\subsection*{Splines}
-One could approximate the time series by splines~{\color{red} [link]}. Spline is defined by its parameters:
+\subsubsection*{Splines}
+One could approximate the time series by splines~\cite{deboor1978splines}. The spline is defined by its parameters:
 \begin{itemize}
 	\item 
-	$\{\xi_\ell\}_{\ell=1}^L$~--- the set of knots;
+	$\{\xi_\ell\}_{\ell=1}^L$~--- the set of knots. To get the adequate result we normalized the knots for each time series.
 	\item 
-	$\{\mathbf{w}_\ell\}_{\ell=1}^{L-1}$ ~--- parameters of the models are built on the interval $[\xi_\ell; \xi_{\ell + 1}]$. The dimension of each parameter vector $\mathbf{w}_{\ell}$ depends on the spline order.
+	$\{\mathbf{w}_\ell\}_{\ell=1}^{L-1}$ ~--- parameters of the models are built on the interval $[\xi_\ell; \xi_{\ell + 1}]$. The dimension of the each parameter vector $\mathbf{w}_{\ell}$ depends on the spline order.
 \end{itemize}
 
-This approach gives a different approximation compared to autoregressive model, one can find it in the Figure~\ref{fig::spline_example}. In the Figure~\ref{fig::ar_example} and in the Figure~\ref{fig::spline_example} we approximate the same time series, so one can notice the main distinction of different methods.
+The feature description of the time series could be assumed as a union of these parameters.
+\[
+	\bm{h}(s) = (\xi_1, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L-1}).
+\]
+
+This approach gives another approximation of the time series. 
+In the Figure~\ref{fig::spline_example} one could find the result of time series approximation given by splines. 
+Compared to the autoregressive model, the splines method gives smoother approximation using almost the same number of parameters.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=1\linewidth]{pics/spline_example.png}
-	\caption{Time series approximation using autoregressive model with $n = 20$}
+	\caption{Time series approximation using splines}
 	\label{fig::spline_example}
 \end{figure}
 
-The feature description of the time series could be assumed as union of these parameters.
-\[
-	\bm{h} = h(s) = (\xi_1, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L-1}).
-\]
-
 \section*{Classification}
-In this section we will describe our approach to classification of time series using newly generated feature. We use three different classification models: logistic regression, SVM and random forests.
+In this section we will describe our approach to classification of time series using newly generated features. 
+We use three different classification models: logistic regression, SVM and random forest.
 
 \subsection*{Quality measure}
-We chose accuracy score as our main quality measure function. We did that because this approach was used in previous articles \cite{karasikov24feature, ivkin} and this measure is easy to understand. Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
+We consider the accuracy score as our main quality measure function. 
+This choice is based on our wish to compare our results with previous articles \cite{karasikov24feature, ivkin} and this measure is easy to interpret. 
+Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
 
 \begin{equation*}
-	\textrm{accuracy}(y, \hat{y}) = \frac{1}{m} \sum_{i=1}^{m} \mathbbm{1} (y_i = \hat{y}_i),
+	\textrm{accuracy}(y, \hat{y}) = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
 \end{equation*}
+where $\hat{y}_i$ is a prediction of the classifier. 
+We calculated this measure for binary case, when we predict each class in particular, and in multiclass case.
 
-where $\hat{y}_i$ is a prediction of the classifier. We calculated this measure for binary case (when we predict each class in particular) and in multilabel case.
+\subsubsection*{Multiclass classification}
+As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. 
+We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
 
-\subsection*{Multiclass classification}
-As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
-
-\subsection*{Logistic regression}
-The first approach to classification we played with was regularized logistic regression. We seek to minimize the following loss function:
+\subsubsection*{Logistic regression}
+The first approach to classification we played with was regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
 
 \begin{equation*}
-	L(\bm{\theta}) = \sum_{i=1}^{m} \log(1 + \exp(-(\bm{\theta}^T\mathbf{h}_i)y_i)) + \frac{\lambda}{2} \|\bm{\theta}\|^2
+	L(\bm{\theta}, \mathfrak{D}_H, \mu) = \sum_{i=1}^{m} \log\left(1 + \exp(-y_i \langle\bm{\theta}, \mathbf{h}_i \rangle)\right) + \frac{\mu}{2} \|\bm{\theta}\|^2
 \end{equation*}
 
 \begin{equation*}
-	\bm{\hat{\theta}} = \argmin_{\mathbb{\theta}} L(\bm{\theta}) 
+	\bm{\theta}^* = \argmin_{\mathbb{\theta}} L(\bm{\theta}, \mathfrak{D}_H, \mu) 
 \end{equation*}
 
-We make a prediction for a new object in a following way:
+The classification rule $g(\mathbf{h}, \bm{\theta})$ is given by sign of the linear combination for the object description $\mathbf{h}$ and parameters $\bm{\theta}^*$
 \begin{equation*}
-	\hat{y} = \sgn (\bm{\hat{\theta}}^T \mathbf{h})
+	\hat{y} = g(\mathbf{h}, \bm{\theta}^*) = \sgn\langle \bm{\theta}^*, \mathbf{h}\rangle
 \end{equation*}
 
-\subsection*{SVM}
-We also used classical binary SVM. The problem in this case can be formulated in a following way:
+\subsubsection*{SVM}
+We also used binary SVM model. The problem in this case can be formulated in a following way:
 
 \begin{align*}
-	\bm{\hat{\theta}}  = \begin{pmatrix}
-	\mathbf{\hat{w}}\\ \hat{b}\\ \bm{\hat{\xi}}
-	\end{pmatrix}= \argmin_{\mathbf{w}, b, \bm{\xi}}  &\frac{1}{2} \|\mathbf{w}\|^2 + C\sum_{i=1}^{m} \xi_i\\
-	\textrm{s.t.} \quad &y_i(\mathbf{w}^T \mathbf{h}_i + b) \geq 1 - \xi_i\\
+	\bm{\theta}^*  = \begin{pmatrix}
+	\bm{w^*} \\ b^* \\ \bm{\xi}^*
+	\end{pmatrix}= &\argmin_{\bm{w}, b, \bm{\xi}}  \frac{1}{2} \|\bm{w}\|^2 + C\sum_{i=1}^{m} \xi_i\\
+	\text{subject to} \quad &y_i (\langle \bm{w}, \mathbf{h}_i \rangle + b) \geq 1 - \xi_i\\
 	&\xi_i \geq 0, \quad 1 \leq i \leq m.
 \end{align*}
  
@@ -355,7 +368,7 @@ For new objects we can make a prediction
 \hat{y} = \sgn (\mathbf{\hat{w}}^T \mathbf{h} + b)
 \end{equation*}
 
-\subsection*{Random Forest}
+\subsubsection*{Random Forest}
 Random forest is an algorithm which exploits the idea of bagging. This is an approach of building many random weak classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of single trees:
 
 \begin{equation*}
@@ -364,20 +377,11 @@ Random forest is an algorithm which exploits the idea of bagging. This is an app
 
 where $B$ is an amount of trees used for bagging.
 
-\subsection*{\color{red} TO DO section}
-\begin{itemize}
-	\item the function $h$ is vectorial (discuss notations);
-	\item add explanation(pics) of autoregressive model;
-	\item splines;
-	\item add literature;
-	\item fix the literature style.
-\end{itemize}
-
 \section*{Experiment}
 In this paper we consider two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
 Data from smart phone accelerometer consists of information about acceleration along each of three axis. 
 Time difference between measurements equals 50 ms. 
-Each time series belongs to one activity. 
+The WISDM dataset consists of 4321 objects and each time series belongs to one of the six activities : Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 objects with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
 The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}. 
 The length of each time series equals 200 which accounts 10 second. 
 In the Figure~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
@@ -433,8 +437,8 @@ In the Figure~\ref{fig::ts_example} the example of the time series for one activ
 
 For each dataset we applied the feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
 We used three different widely used classification model for each generated feature description: logistic regression, support vector machine and random forest. 
-The external structural parameters for feature generation procedures,  such as the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using 3-fold cross validation procedure. 
-The hyperparameters for classification models were also tuned using the same cross validation procedure. 
+The external structural parameters $\bm{\lambda}$ for feature generation procedures,  such as the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using 3-fold cross validation procedure. 
+The hyperparameters $\bm{\mu}$ for classification models were also tuned using the same cross validation procedure. 
 
 In paper~\cite{kwapisz2011activity} the authors proposed to use the following expert functions for time series classification:
 \begin{itemize}
@@ -444,11 +448,22 @@ In paper~\cite{kwapisz2011activity} the authors proposed to use the following ex
 	\item (1) average resultant acceleration;
 	\item (30) values of histogram with 10 bins for each axis.
 \end{itemize}
-Autoregressive parameters + SSA {\color{red} TO DO}.
+Hence feature extraction procedure gives us the feature description of time series $\bm{h}(s) \in \mathbb{R}^40$.
 
-We fit splines for time series using $scipy$~{\color{red} [link]} python library. The spline order equals 3. The knots $\{\xi_{\ell}\}_{\ell = 1}^L$ for  splines were distributed uniformly. The number~$L$ were chosen implicitly by fitting smoothing parameter~$s$, it is possible because $L \sim \frac{1}{s}$. The fitting was constructed as follows. Firstly, there was the initialization step to find appropriate bounds for smoothing parameter. The next step is finding the smoothing parameter in this interval using bi-search approach.
+Autoregressive model were tuned to find the optimal length $n$. Cross validation procedure gives optimal value $n=20$ for both dataset. 
 
-The number of features for each method are
+Singular spectrum analysis were tuned in the same way to find the optimal window width $n$. Analogously to autoregressive model the cross validation procedure gives the same value $n=20$. Authors assume that it means that time series has memory of this size.
+
+We fit splines for time series using $scipy$ python library. 
+This software fits 3-order B-splines~\cite{deboor1978splines}. 
+The knots $\{\xi_{\ell}\}_{\ell = 1}^L$ for  splines were distributed uniformly. 
+The number~$L$ were chosen implicitly by choosing the proper smoothing parameter~$s$. 
+The less the value of $s$, the larger the number of knots $L$. 
+The fitting was constructed as follows. 
+Firstly, there was the initialization step to find appropriate bounds for smoothing parameter. 
+The next step is finding the smoothing parameter in this interval using bi-search approach.
+
+The feature extraction methods gives the following number of features for both datasets:
 \begin{itemize}
 	\item expert features: 40;
 	\item autoregressive model: 63;
@@ -456,9 +471,9 @@ The number of features for each method are
 	\item splines: 33.
 \end{itemize}
 
-The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. All results with classification accuracy scores of each class are represented in Table~\ref{tbl::wisdm_methods_results} for WISDM dataset and in Table~\ref{tbl::uschad_methods_results} for USCHAD.
-
-According to the Figure~\ref{fig::accuracy_results} for WISDM dataset the worst result is obtained by splines parameters. The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results is highly depend on the classification model. For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
+The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result is obtained by splines parameters. 
+The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results highly depend on the classification model. 
+For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
 
 \begin{figure}[h]
 	\centering
@@ -466,14 +481,15 @@ According to the Figure~\ref{fig::accuracy_results} for WISDM dataset the worst 
 	\includegraphics[width=0.49\linewidth]{presentation/wisdm_methods.png}}
 	\subfloat{
 	\includegraphics[width=0.49\linewidth]{presentation/uschad_methods.png}}
-	\caption{Accuracy scores}
+	\caption{Multiclass accuracy score}
 	\label{fig::accuracy_results}
 \end{figure}
 
+All results with classification accuracy scores for each class are represented in Table~\ref{tbl::wisdm_methods_results} and Table~\ref{tbl::uschad_methods_results}. The first row of these tables introduces the multiclass accuracy score for each classification model and each feature extraction procedure. Next rows are related to binary accuracy scores for each class. For WISDM dataset the best scores have the least active classes such as Standing and Sitting. For USC-HAD dataset all classes have the similar accuracy scores.
 
 \begin{table}[h]
 	\centering
-	\caption{Accuracy scores of classification of each class using different methods of feature generation: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\caption{Binary accuracy scores for WISDM using different feature generation methods: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
 	\footnotesize
 	\begin{tabular}{r|rrrr|rrrr|rrrr|}
 		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
@@ -492,7 +508,7 @@ According to the Figure~\ref{fig::accuracy_results} for WISDM dataset the worst 
 \begin{table}[h]
 	\centering
 	\footnotesize
-	\caption{Accuracy scores of classification of each class using different methods of feature generation: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\caption{Binary accuracy scores for USC-HAD using different feature generation methods: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
 	\label{my-label}
 	\begin{tabular}{r|rrrr|rrrr|rrrr|}
 		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
@@ -514,7 +530,7 @@ According to the Figure~\ref{fig::accuracy_results} for WISDM dataset the worst 
 	\label{tbl::uschad_methods_results}
 \end{table}
 
-We also carried out the experiment for union of all $196$ generated features. The results are demonstrated on the Figure~\ref{fig::feature_union_results}. In the Table~\ref{tbl::activities_distributions} one can see class labels, that are represented on the corresponding histograms.
+We also carried out the experiment for union of all $196$ generated features. The results are demonstrated on the Figure~\ref{fig::feature_union_results}. In the Table~\ref{tbl::activities_distributions} one can see class labels, that are represented on the corresponding histograms. As expected, the accuracy scores in this case are higher in all cases. All binary accuracy scores for WISDM datasets is larger than $97 \%$ for each classification model. These numbers for USC-HAD dataset is larger than $93 \%$.
 
 \begin{figure}[h]
 	\centering
@@ -542,6 +558,70 @@ The experiment on the real data from smart phone accelerometer were carried out.
 We compared different feature descriptions and different classification models. 
 The results show that obtained features allows to recover the class label with the high quality.
 
-\bibliographystyle{unsrt}
-\bibliography{ref.bib}
+\begin{thebibliography}{1}
+	
+	\bibitem{geurts2001pattern}
+	Pierre Geurts.
+	\newblock Pattern extraction for time series classification.
+	\newblock In {\em European Conference on Principles of Data Mining and
+		Knowledge Discovery}, 115--127. 2001.
+	
+	\bibitem{wang2014human}
+	Wen Wang, Huaping Liu, Lianzhi Yu, and Fuchun Sun.
+	\newblock Human activity recognition using smart phone embedded sensors: A
+	linear dynamical systems method.
+	\newblock In {\em Neural Networks (IJCNN), 2014 International Joint Conference
+		on}, 1185--1190. 2014.
+	
+	\bibitem{karasikov24feature}
+	Karasikov~M.E. and Strijov~V.V.
+	\newblock Feature-based time-series classification.
+	\newblock {\em Intelligence}, 24(1):164--181. 2016.
+	
+	\bibitem{ivkin}
+	Kuznetsov~M.P. and Ivkin~N.P.
+	\newblock Time series classification algorithm using combined feature
+	description.
+	\newblock {\em Journal of Machine Learning and Data Analysis}, 1(11):1471--1483. 2015.
+	
+	\bibitem{kwapisz2011activity}
+	Jennifer~R Kwapisz, Gary~M Weiss, and Samuel~A Moore.
+	\newblock Activity recognition using cell phone accelerometers.
+	\newblock {\em ACM SigKDD Explorations Newsletter}, 12(2):74--82, 2011.
+	
+	\bibitem{lukashin2003adaptive}
+	Lukashin~Yu.P.
+	\newblock Adaptive methods of short-term forecasting of time series.
+	\newblock {\em Finance and statistics}, 2003.
+	
+	\bibitem{hassani2007singular}
+	Hossein Hassani.
+	\newblock Singular Spectrum Analysis: Methodology and Comparison.
+	\newblock  {\em Journal of Data Science}, 5(2):239--257. 2007.
+	
+	\bibitem{wisdm}
+	The WISDM (Wireless Sensor Data Mining) dataset.
+	\newblock \url{http://www.cis.fordham.edu/wisdm/dataset.php}.
+	
+	\bibitem{usc}
+	The USC-HAD (University of Southern California Human Activity Dataset).
+	\newblock \url{http://www-scf.usc.edu/~mizhang/datasets.html}.
+	
+	\bibitem{bishop2006pattern}
+	Bishop, Christopher M.
+	\newblock Pattern recognition.
+	\newblock {\em Machine Learning}. 2006.
+	
+	\bibitem{golub1970singular}
+	Golub, Gene H and Reinsch, Christian.
+	\newblock Singular value decomposition and least squares solutions.
+	\newblock {\em Numerische mathematik}. 14(5):403-420. 1970.
+	
+	\bibitem{deboor1978splines}
+	De Boor C. et al.
+	\newblock A practical guide to splines.
+	\newblock {\em Springer-Verlag}. 1978.
+	
+\end{thebibliography}
+
 \end{document}
