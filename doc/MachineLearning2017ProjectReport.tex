@@ -246,7 +246,15 @@ where $\epsilon_t$ is a random noise. Prediction of the autoregressive model is 
 	\hat{x}_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j}.
 	\label{eq::autoregression_prediction}
 \end{equation}
-For this method $n$ is a structural parameter and $\bm{\lambda} = n$. 
+For this method $n$ is a structural parameter and $\bm{\lambda} = n$. The example of approximation using autoregressive model is demonstrated on the Figure~\ref{fig::ar_example}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{pics/ar_example.png}
+	\caption{Time series approximation using autoregressive model with $n = 20$}
+	\label{fig::ar_example}
+\end{figure}
+
 
 Feature description $\mathbf{h}$ of the object $s$ is given by optimal parameters of autoregressive model $\widehat{\mathbf{w}} = \{\widehat{w}_j\}_{j=0}^n$ for time series $s_i$. The hypothesis error function~\eqref{eq::optimal_description} in this case is the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}. 
 
@@ -284,6 +292,16 @@ One could approximate the time series by splines~{\color{red} [link]}. Spline is
 	\item 
 	$\{\mathbf{w}_\ell\}_{\ell=1}^{L-1}$ ~--- parameters of the models are built on the interval $[\xi_\ell; \xi_{\ell + 1}]$. The dimension of each parameter vector $\mathbf{w}_{\ell}$ depends on the spline order.
 \end{itemize}
+
+This approach gives a different approximation compared to autoregressive model, one can find it in the Figure~\ref{fig::spline_example}. In the Figure~\ref{fig::ar_example} and in the Figure~\ref{fig::spline_example} we approximate the same time series, so one can notice the main distinction of different methods.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{pics/spline_example.png}
+	\caption{Time series approximation using autoregressive model with $n = 20$}
+	\label{fig::spline_example}
+\end{figure}
+
 The feature description of the time series could be assumed as union of these parameters.
 \[
 	\bm{h} = h(s) = (\xi_1, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L-1}).
@@ -432,7 +450,9 @@ The number of features for each method are
 	\item splines: 33.
 \end{itemize}
 
-The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result is obtained by splines parameters. The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results is highly depend on the classification model. For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
+The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. All results with classification accuracy scores of each class are represented in Table~\ref{tbl::wisdm_methods_results} for WISDM dataset and in Table~\ref{tbl::uschad_methods_results} for USCHAD.
+
+According to the Figure~\ref{fig::accuracy_results} for WISDM dataset the worst result is obtained by splines parameters. The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results is highly depend on the classification model. For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
 
 \begin{figure}[h]
 	\centering
@@ -443,6 +463,50 @@ The results of the experiments for the both datasets is presented in Figure~\ref
 	\caption{Accuracy scores}
 	\label{fig::accuracy_results}
 \end{figure}
+
+
+\begin{table}[h]
+	\centering
+	\caption{Accuracy scores of classification of each class using different methods of feature generation: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\footnotesize
+	\begin{tabular}{r|rrrr|rrrr|rrrr|}
+		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
+		& EX   & AR   & SSA   & SPL  & EX  & AR & SSA & SPL & EX & AR & SSA & SPL \\ \hline
+		All& 0.85 & 0.91 & 0.84 & 0.58 & 0.93 & 0.93 & 0.92 & 0.79 & 0.93 & 0.95 & 0.95 & 0.77 \\
+		Standing& 0.99 & 0.98 & 1.00 & 0.95 & 1.00 & 0.99 & 1.00 & 0.99 & 0.99 & 0.98 & 1.00 & 0.96 \\
+		Walking& 0.91 & 0.96 & 0.86 & 0.61 & 0.96 & 0.97 & 0.95 & 0.86 & 0.96 & 0.98 & 0.98 & 0.84 \\
+		Upstairs& 0.91 & 0.95 & 0.91 & 0.89 & 0.96 & 0.96 & 0.96 & 0.90 & 0.96 & 0.98 & 0.97 & 0.89 \\
+		Sitting& 0.99 & 0.98 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 1.00 & 0.99 & 0.98 & 1.00 & 1.00 \\
+		Jogging& 0.98 & 0.99 & 0.99 & 0.80 & 0.99 & 0.99 & 0.99 & 0.92 & 0.99 & 0.99 & 0.99 & 0.93 \\
+		Downstairs& 0.93 & 0.96 & 0.94 & 0.92 & 0.96 & 0.97 & 0.96 & 0.92 & 0.96 & 0.98 & 0.97 & 0.92 \\ \hline
+	\end{tabular}
+	\label{tbl::wisdm_methods_results}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\footnotesize
+	\caption{Accuracy scores of classification of each class using different methods of feature generation: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\label{my-label}
+	\begin{tabular}{r|rrrr|rrrr|rrrr|}
+		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
+		& EX   & AR   & SSA   & SPL  & EX  & AR & SSA & SPL & EX & AR & SSA & SPL \\ \hline
+		All& 0.67 & 0.65 & 0.64 & 0.41 & 0.87 & 0.70 & 0.84 & 0.74 & 0.80 & 0.65 & 0.82 & 0.74 \\
+		Standing& 0.94 & 0.94 & 0.92 & 0.89 & 0.98 & 0.94 & 0.97 & 0.98 & 0.95 & 0.94 & 0.97 & 0.96 \\
+		Elevator-up& 0.94 & 0.94 & 0.93 & 0.92 & 0.95 & 0.95 & 0.95 & 0.95 & 0.93 & 0.94 & 0.94 & 0.93 \\
+		Walking-forward& 0.87 & 0.87 & 0.89 & 0.70 & 0.97 & 0.89 & 0.96 & 0.88 & 0.95 & 0.87 & 0.97 & 0.91 \\
+		Sitting& 0.98 & 0.95 & 0.94 & 0.96 & 0.99 & 0.96 & 0.98 & 0.99 & 0.98 & 0.96 & 0.99 & 0.99 \\
+		Walking-downstairs& 0.95 & 0.93 & 0.93 & 0.90 & 0.99 & 0.96 & 0.98 & 0.95 & 0.98 & 0.93 & 0.98 & 0.96 \\
+		Sleeping& 1.00 & 0.98 & 0.99 & 1.00 & 1.00 & 0.98 & 1.00 & 1.00 & 1.00 & 0.98 & 1.00 & 1.00 \\
+		Elevator-down& 0.94 & 0.94 & 0.94 & 0.91 & 0.95 & 0.95 & 0.95 & 0.95 & 0.93 & 0.94 & 0.94 & 0.93 \\
+		Walking-upstairs& 0.94 & 0.95 & 0.93 & 0.92 & 0.98 & 0.95 & 0.98 & 0.96 & 0.98 & 0.95 & 0.98 & 0.96 \\
+		Jumping& 0.99 & 0.99 & 1.00 & 0.97 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 0.99 & 0.97 & 0.99 \\
+		Walking-right& 0.91 & 0.90 & 0.91 & 0.86 & 0.97 & 0.92 & 0.96 & 0.92 & 0.96 & 0.90 & 0.97 & 0.93 \\
+		Walking-left& 0.89 & 0.91 & 0.90 & 0.88 & 0.97 & 0.93 & 0.97 & 0.93 & 0.95 & 0.91 & 0.97 & 0.93 \\
+		Running& 0.99 & 0.99 & 0.99 & 0.92 & 1.00 & 0.99 & 1.00 & 0.97 & 1.00 & 1.00 & 0.95 & 0.98\\ \hline
+	\end{tabular}
+	\label{tbl::uschad_methods_results}
+\end{table}
 
 We also carried out the experiment for union of all $196$ generated features. The results are demonstrated on the Figure~\ref{fig::feature_union_results}. In the Table~\ref{tbl::activities_distributions} one can see class labels, that are represented on the corresponding histograms.
 
