@@ -93,8 +93,8 @@
 % \cfoot{Нижний в центре} % По умолчанию здесь номер страницы 
 
 \usepackage{setspace} % Интерлиньяж 
-%\onehalfspacing % Интерлиньяж 1.5 
-\doublespacing % Интерлиньяж 2 
+\onehalfspacing % Интерлиньяж 1.5 
+%\doublespacing % Интерлиньяж 2 
 %\singlespacing % Интерлиньяж 1
 \setlength{\parindent}{1cm}
 
@@ -316,11 +316,43 @@ Compared to the autoregressive model, the splines method gives smoother approxim
 	\label{fig::spline_example}
 \end{figure}
 
+\subsubsection*{Shape invariant model}
+
+All time series are shifted and have different magnitudes in time and acceleration. 
+In order to find the same structure in every time series one could apply self model regression approach~{\color{red} link}. 
+We assume that our time series $s$ is a function of time variable $t$ and this function can be represented as the shape invariant model
+\[
+	s(t) = \theta_{0} + \theta_{1} g \left(\frac{t - \theta_2}{\theta_4} \right).
+\]
+The function $g(\cdot)$ represents the general characteristic shape of the time series. 
+The coefficients $\theta_0, \theta_2$ are the corresponding shifts along acceleration and time respectively. $\theta_1, \theta_4$ scale time series on  acceleration and time axis. 
+These four parameters are different for each time series, while the function $g$ is the same.
+
+Self modelling regression is a problem of determining the optimal shape function $g$ and the coefficients $\{\theta_j\}_{j=1}^4$ for each time series.
+
+The simplest way to solve this problem is to use one of the given time series as the function $g$. 
+For example one could assume, $g(t) = s_1(t)$ and our model has the form
+\[
+	s(t) = \theta_{0} + \theta_{1} s_1 \left(\frac{t - \theta_2}{\theta_4} \right).
+\]
+
+More sophisticated way to solve the problem is to fix the family $G$ of the possible functions $g$. For example, we can find the best first order spline with fixed knots $(t_1, \dots, t_L)$. Each this spline is determined by the values at the knots $(g_1, \dots, g_L)$. Actually the spline is given by connecting the neighbouring points by straight lines. If we choose the spline knots as times given in the sample, we can formulate the iterative process. 
+
+Firstly, we initialize the vectors $\bm{\theta}_i \in \mathbb{R}^4$ for each time series $s_i$. Then we solve the linear regression problem
+\[
+	\sum_{i=1}^L \left(x_i - s(t_i)\right)^2 \rightarrow \min_{g}.
+\]
+The objective function depends on the function $g$ linearly. The output of this step is the optimal vector $(g_1, \dots, g_T)$. 
+
+Then we want to update the parameters vectors~$\bm{\theta}_i$. We minimize the same functional, but it depends on $\bm{\theta}_i$ non-linearly. To solve this problem we use non-linear regression using Newton-Raphson method. 
+
+These two steps repeat until convergence. The stopping criteria is the insignificant changes of the function $g$ between iterations.
+
 \section*{Classification}
 In this section we will describe our approach to classification of time series using newly generated features. 
 We use three different classification models: logistic regression, SVM and random forest.
 
-\subsection*{Quality measure}
+\subsubsection*{Quality measure}
 We consider the accuracy score as our main quality measure function. 
 This choice is based on our wish to compare our results with previous articles \cite{karasikov24feature, ivkin} and this measure is easy to interpret. 
 Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
