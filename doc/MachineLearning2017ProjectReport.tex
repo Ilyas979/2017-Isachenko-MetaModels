@@ -129,7 +129,7 @@
 \usepackage{pgfplots} 
 \usepackage{pgfplotstable} 
 \usepackage{bbm}
-
+\usepackage{cite}
 
 \author
 {Ilya Zharikov, Roman Isachenko, Artem Bochkarev} 
@@ -139,37 +139,36 @@
 
 \begin{document} 
 \maketitle
+\begin{abstract}
+	The development and proliferation of various portable sensors poses new challenges for analyzing and finding meaning in this data. In our work we investigate classification of complex structured objects. One of the main problems in this task is to generate meaningful and relatively small set of features. We compare several approaches for feature extraction such as expertly defined features, autoregression model and SSA. We propose a new feature generation algorithm, based on local spline approximation. The experiment is conducted on two datasets for human activity recognition using accelerometer.
+\end{abstract}
 
 \section*{Introduction}
-This project is dedicated to multiclass classification of complex structured objects (for which we don't have explicit features). 
-The problem arises in many applications such as image recognition, signal processing or time series classification. 
-We will focus on multiclass multivariate time series classification. 
+This project is dedicated to multiclass classification of complex structured objects (with features of different scale, length and/or type). The problems in this area include human activity recognition from accelerometer time series \cite{ignatov2016human, lu2016towards, wang2014human}, multimedia indexing \cite{budnik2016learned} and recognition of people activity in smart homes \cite{luactivity}.
+
+We investigate classification of accelerometer time series. New methods in this field range from topological data analysis \cite{umeda2017time} to using convolutional neural networks \cite{hammerla2016deep}. The extensive survey of methods and datasets for this problem can be found in \cite{incel2013review}. In our work the data is time series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. 
+The problem is to predict the activity a person is performing. 
+List of activities includes walking, running, sitting or walking up/down stairs.
 In this setup time series are regarded as complex structured objects without explicit feature description. 
-This is reasonable because we can't operate with original features as time series might be of different size, not aligned \cite{geurts2001pattern} or even multiscaled.
+This is reasonable because we can't operate with original features as time series might be of different size, not aligned or even multiscaled \cite{geurts2001pattern}.
 
-We investigate classification of accelerometer time series \cite{wang2014human}. The data is time series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. 
-The task is to predict the activity a person is performing. 
-List of activities might include walking, running, sitting or walking up/down the stairs.
-
-In general the problem of classifying complex structured objects can be split in two distinctive procedures. 
+The problem of classifying complex structured objects is split in two distinctive procedures. 
 First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. 
 For simplicity, we assume that these two procedures can be built and analyzed separately. 
 In our project we focused mainly on comparing different methods of feature generation \cite{karasikov24feature, ivkin}. 
-Extracted features can be later used for building classifiers and feature selection algorithms.
 
 The first approach for feature generation is calculating expertly defined functions of time series \cite{kwapisz2011activity}. 
 These functions include average value, standard deviation, mean absolute deviation and distribution for each component. 
 We consider this approach a baseline, as it is the simplest method we use.
 
-We compare baseline with more sophisticated parametric feature generation methods. 
+We compare baseline with more sophisticated parametric feature generation methods, in which we build approximation models and use their parameters as our final features for classification. 
+In this paper we propose using local spline approximation for feature extraction. In this setup features are knots and parameters of optimal cubic splines. We compare this method with other well-known methods for extracting features from time series.
 One of them is autoregressive model \cite{lukashin2003adaptive}. 
 For each time series we build parametric model and use those parameters as features for classification. 
-The next approach is  the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
+Another approach is the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
 We use eigenvalues of trajectory matrix as features for building classifier. 
-Finally, we consider the parameters of the splines as the feature description  of time series.
 
-In the first part of these report we give definitions and make problem statement. In the second part we describe all of the proposed approaches in more detail. 
-Last, we make the experiment on real accelerometer datasets \cite{wisdm, usc}, compare all methods and give conclusions and recommendations for practical use.
+The experiment was conducted on two real accelerometer datasets \cite{wisdm, usc}. We compared the performance of stated feature extraction methods, as well as different classification algorithms. The latter include logistic regression, random forest and SVM.
 
 \section*{Problem Statement}
 Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
@@ -590,20 +589,22 @@ The experiment on the real data from smart phone accelerometer were carried out.
 We compared different feature descriptions and different classification models. 
 The results show that obtained features allows to recover the class label with the high quality.
 
+\bibliographystyle{unsrt}
+\bibliography{ref.bib}
+\iffalse
 \begin{thebibliography}{1}
-	
-	\bibitem{geurts2001pattern}
-	Pierre Geurts.
-	\newblock Pattern extraction for time series classification.
-	\newblock In {\em European Conference on Principles of Data Mining and
-		Knowledge Discovery}, 115--127. 2001.
-	
 	\bibitem{wang2014human}
 	Wen Wang, Huaping Liu, Lianzhi Yu, and Fuchun Sun.
 	\newblock Human activity recognition using smart phone embedded sensors: A
 	linear dynamical systems method.
 	\newblock In {\em Neural Networks (IJCNN), 2014 International Joint Conference
 		on}, 1185--1190. 2014.
+	
+	\bibitem{geurts2001pattern}
+	Pierre Geurts.
+	\newblock Pattern extraction for time series classification.
+	\newblock In {\em European Conference on Principles of Data Mining and
+		Knowledge Discovery}, 115--127. 2001.
 	
 	\bibitem{karasikov24feature}
 	Karasikov~M.E. and Strijov~V.V.
@@ -655,5 +656,6 @@ The results show that obtained features allows to recover the class label with t
 	\newblock {\em Springer-Verlag}. 1978.
 	
 \end{thebibliography}
+\fi
 
 \end{document}
