@@ -162,7 +162,7 @@ These functions include average value, standard deviation, mean absolute deviati
 We consider this approach a baseline, as it is the simplest method we use.
 
 We compare baseline with more sophisticated parametric feature generation methods, in which we build approximation models and use their parameters as our final features for classification. 
-In this paper we propose using local spline approximation for feature extraction. In this setup features are knots and parameters of optimal cubic splines. We compare this method with other well-known methods for extracting features from time series.
+In this paper we propose using local spline approximation for feature extraction. In this setup features are knots and parameters of optimal cubic splines approximating our data. We compare this method with other well-known methods for extracting features from time series.
 One of them is autoregressive model \cite{lukashin2003adaptive}. 
 For each time series we build parametric model and use those parameters as features for classification. 
 Another approach is the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
@@ -171,9 +171,8 @@ We use eigenvalues of trajectory matrix as features for building classifier.
 The experiment was conducted on two real accelerometer datasets \cite{wisdm, usc}. We compared the performance of stated feature extraction methods, as well as different classification algorithms. The latter include logistic regression, random forest and SVM.
 
 \section*{Problem Statement}
-Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
+Let $\mathcal{S}$ be a space of complex structured objects (i.e. we don't have feature representation suitable for direct classification), $Y$ is a finite set of class labels. 
 Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$ a given sample, where $s_i \in \mathcal{S}$ and $y_i \in Y$.
-
 We consider the problem of recovering the function $f: \mathcal{S} \rightarrow Y$
 \[
 	y = f(s).
@@ -196,7 +195,7 @@ We assume that the target function $f^*$ belongs to the class of function compos
 
 The determining of the function $f^*$ is equivalent to determining the functions $\bm{h}^*$ and  $g^*$.
 
-In this paper we consider the following ways of generating the feature space~$H$:
+In this paper we consider the following ways of generating feature space~$H$:
 \begin{itemize}
 	\item 
 	expert functions based on prior knowledge of the original objects. 
@@ -206,9 +205,9 @@ In this paper we consider the following ways of generating the feature space~$H$
 		\bm{h}^*(s) = (h_1(s), \dots, h_n(s)).
 	\]
 	\item 
-	hypothesis of data generation. 
-	In this case the features are the estimated parameters of the considered hypothesis. 
-	Let $S(s, \bm{h}, \boldsymbol{\lambda})$ be the error function which specifies the hypothesis, e.g. one could define the function $S$ as negative log-likelihood function~\cite{bishop2006pattern}. 
+	Local approximation models. 
+	In this case the features are the estimated parameters the model, approximating our data. 
+	Let $S(s, \bm{h}, \boldsymbol{\lambda})$ be the error function of approximation, e.g. one could define the function $S$ as negative log-likelihood function~\cite{bishop2006pattern}. 
 	The optimal feature map $\bm{h}^*(s)$ is obtained by
 	\begin{equation}
 		\bm{h}^*(s) = \argmin_{\bm{h}} S( s, \bm{h}, \bm{\lambda}).
@@ -227,17 +226,39 @@ The optimal parameters~$\bm{\theta}^*$ are given by
 \end{equation}
 where $L(\cdot, \cdot, \cdot)$ is an analogue of the function~\eqref{eq::general_classification_task}. Here the vector $\bm{\mu}$ is a external parameters of the particular classification model.
 
+We consider the accuracy score to be the negative of main quality measure function $L$. 
+This choice is based on our wish to compare our results with previous articles \cite{karasikov24feature, ivkin} and this measure is easy to interpret. 
+Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
+\begin{equation*}
+\textrm{accuracy}(y, \hat{y}) = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
+\end{equation*}
+where $\hat{y}_i$ is a prediction of the classifier. 
+
 In our project we consider accelerometer time series as complex structured objects. Time series is represented in the following way:
 \[
 	s = (x_1, \dots, x_T) \in \mathcal{S},
 \]
-where $T$ denotes the length of time series. Now let us expand on different approaches for feature generation.
+where $T$ denotes the length of time series.
 
 \section*{Feature generation}
+The main focus of this paper is to compare different approaches for feature generation. In this section we provide analysis and motivation behind each of the methods.
 \subsubsection*{Expert functions}
-Given a set of complex objects $\{s_i\}_{i=1}^m$ we extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$. 
-For time series, these functions could be mean, standard deviations, mean absolute deviations and distributions of the acceleration. 
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$.
+We list commonly used expert functions for time series in table (\ref{expert}). 
 The main drawback of this approach is that we are restricted by our choice of the expert functions and these functions might be impossible to derive for some types of data.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Function description}    & \textbf{Formula} \\ \hline
+		Mean                    & $\bar{\mathbf{x}} = \frac{1}{T} \sum_{t=1}^{T} \mathbf{x}_t$    \\ \hline
+		Standard deviation      & $\sqrt{\frac{1}{T} \sum_{t=1}^{T} (\mathbf{x}_t - \bar{\mathbf{x}})^2}$    \\ \hline
+		Mean absolute deviation & $\frac{1}{T} \sum_{t=1}^{T} |\mathbf{x}_t - \bar{\mathbf{x}}|$    \\ \hline
+		Distribution            & Number of points in each histogram bin    \\ \hline
+	\end{tabular}
+	\caption{Expert functions}
+	\label{expert}
+\end{table}
 
 \subsubsection*{Autoregressive model}
 In this method we assume autoregressive model~\cite{lukashin2003adaptive} of the order $n$ as a hypothesis for generation of time series $s$. 
@@ -270,7 +291,7 @@ The example of approximation using autoregressive model is demonstrated on the F
 	\label{fig::ar_example}
 \end{figure}
 
-\subsubsection*{Singular spectrum analysis}
+\subsubsection*{Singular spectrum decomposition}
 Alternative hypothesis for generation of time series is SSA (Singular Spectrum Analysis) model~\cite{hassani2007singular}. We construct trajectory matrix for each time series $s=(x_1, \dots x_T)$:
 \[
 	\mathbf{X} = 
@@ -291,17 +312,28 @@ where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \do
 	\bm{h}(s) = (\lambda_1, \dots, \lambda_n).
 \]
 \subsubsection*{Splines}
-One could approximate the time series by splines~\cite{deboor1978splines}. The spline is defined by its parameters:
+Approximate of time series can be done by splines~\cite{deboor1978splines}. The spline is defined by its parameters:
 \begin{itemize}
 	\item 
-	$\{\xi_\ell\}_{\ell=1}^L$~--- the set of knots. To get the adequate result we normalized the knots for each time series.
+	$\{\xi_\ell\}_{\ell=0}^L$~--- the set of knots. Knots can uniform or nonuniform. To get the adequate result we normalized the knots for each time series.
 	\item 
-	$\{\mathbf{w}_\ell\}_{\ell=1}^{L-1}$ ~--- parameters of the models are built on the interval $[\xi_\ell; \xi_{\ell + 1}]$. The dimension of the each parameter vector $\mathbf{w}_{\ell}$ depends on the spline order.
+	$\{\mathbf{w}_\ell\}_{\ell=1}^{L}$ ~--- parameters of the models are built on the interval $[\xi_{\ell-1}; \xi_{\ell}]$. The dimension of the each parameter vector $\mathbf{w}_{\ell}$ depends on the spline order.
 \end{itemize}
 
+In order to find optimal spline parameters $\mathbf{w}$, one need to solve system of equations with additional constraints of equality of derivatives up to second order on the edges of intervals. If we denote each spline segment as $p_i(t)$ and spline as a whole as $S(t)$, we can write these equations in a following way:
+\begin{align*}
+	&S(x) = \begin{cases}
+	p_1(x) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1]\\
+	p_2(x) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2]\\
+	\cdots &\\
+	p_{L}(x) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{L-1}, \xi_L]					
+	\end{cases}\\
+	&S(t) = x_t \quad t = 1, \dots, T\\
+	&p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, L-1\\
+	\end{align*}
 The feature description of the time series could be assumed as a union of these parameters.
 \[
-	\bm{h}(s) = (\xi_1, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L-1}).
+	\bm{h}(s) = (\xi_0, \dots, \xi_L, \mathbf{w}_1, \dots, \mathbf{w}_{L}).
 \]
 
 This approach gives another approximation of the time series. 
@@ -314,7 +346,8 @@ Compared to the autoregressive model, the splines method gives smoother approxim
 	\caption{Time series approximation using splines}
 	\label{fig::spline_example}
 \end{figure}
-
+%-------------------------------------------------------------------------------------------
+\iffalse
 \subsubsection*{Shape invariant model}
 
 All time series are shifted and have different magnitudes in time and acceleration. 
@@ -346,26 +379,16 @@ The objective function depends on the function $g$ linearly. The output of this 
 Then we want to update the parameters vectors~$\bm{\theta}_i$. We minimize the same functional, but it depends on $\bm{\theta}_i$ non-linearly. To solve this problem we use non-linear regression using Newton-Raphson method. 
 
 These two steps repeat until convergence. The stopping criteria is the insignificant changes of the function $g$ between iterations.
+%-------------------------------------------------------------------------------------------
+\fi
 
 \section*{Classification}
-In this section we will describe our approach to classification of time series using newly generated features. 
-We use three different classification models: logistic regression, SVM and random forest.
-
-\subsubsection*{Quality measure}
-We consider the accuracy score as our main quality measure function. 
-This choice is based on our wish to compare our results with previous articles \cite{karasikov24feature, ivkin} and this measure is easy to interpret. 
-Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
-
-\begin{equation*}
-	\textrm{accuracy}(y, \hat{y}) = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
-\end{equation*}
-where $\hat{y}_i$ is a prediction of the classifier. 
-We calculated this measure for binary case, when we predict each class in particular, and in multiclass case.
-
 \subsubsection*{Multiclass classification}
 As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. 
 We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
-
+In this section we will describe our approach to classification of time series using newly generated features. 
+We use three different classification models: logistic regression, SVM and random forest.
+\section*{Classification methods}
 \subsubsection*{Logistic regression}
 The first approach to classification we played with was regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
 
