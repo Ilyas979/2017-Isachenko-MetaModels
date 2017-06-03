@@ -172,7 +172,7 @@ The experiment was conducted on two real accelerometer datasets \cite{wisdm, usc
 
 \section*{Problem Statement}
 Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
-The research consider accelerometer time series as complex structured objects. Time series is represented as the vector with fixed length $T$:
+We consider accelerometer time series as complex structured objects. Time series is represented as the vector with fixed length $T$:
 \begin{equation}
 s = [x_1, \dots, x_T]^{\T} \in \mathcal{S}.
 \label{eq::time_series}
@@ -180,14 +180,14 @@ s = [x_1, \dots, x_T]^{\T} \in \mathcal{S}.
 We assume that there is a hidden true dependence $f^*: \mathcal{S} \rightarrow Y$ between objects from the space $\mathcal{S}$ and their class labels from $Y$.
 Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$ a~given sample, where $s_i \in \mathcal{S}$ and $y_i = f^*(s_i)\in Y$.
 The problem is to recover the function~$f^*$. 
-Our assumption is that the target function $f^*$ could be approximated by some function $\hat{f}$ from the class of function compositions $f = g \circ \bm{h}$. 
+We assume that the target function $f^*$ can be approximated by some function $\hat{f}$ from the class of function compositions $f = g \circ \bm{h}$. 
 Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \mathbb{R}^n$,
 $g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the set of class labels $Y$. 
 The function $\hat{g}$ corresponds to classification model which is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
 
 The determining of the function $\hat{f}$ is equivalent to determining the functions $\hat{\bm{h}}$ and  $\hat{g}$. 
 The function $\hat{\bm{h}}$ corresponds to generating the appropriate feature space $H$. 
-The research consider different local approximation models as the feature generation methods. 
+We consider different local approximation models as the feature generation methods. 
 In this case the features are the estimated parameters of the models.
 
 Given appropriate feature space $H$ and feature map $\hat{\bm{h}}$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = \hat{\bm{h}}(s_i) \in H$. 
@@ -200,8 +200,8 @@ The optimal parameters~$\hat{\bm{\theta}}$ are given by
 where the function $L(\bm{\theta}, \mathfrak{D}_H, \bm{\mu})$ is the classification error function. Here the vector $\bm{\mu}$ is a external parameters of the particular classification model. Examples of these parameters for different classification models are given below.
 
 To evaluate the quality of our approximation we consider the accuracy score. 
-This choice is based on our wish to compare our results with previous articles~\cite{karasikov24feature, ivkin} and this measure is easy to interpret. 
-Accuracy score is a relation correctly labeled objects and the total amount of objects in dataset:
+This choice is based on our wish to compare our results with previous articles~\cite{karasikov24feature, ivkin} and easy interpretation. 
+Accuracy score is a relation between correctly classified objects and their total number in dataset:
 \begin{equation*}
 \textrm{accuracy} = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
 \end{equation*}
@@ -214,7 +214,7 @@ The main focus of this paper is to compare different approaches for feature gene
 \subsubsection*{Expert functions}
 
 We use the expert functions features as the baseline for local approximation models.
-Expert functions based on prior knowledge of the original objects. 
+Expert functions are based on prior knowledge of the original objects. 
 These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$, where $h_i: \mathcal{S} \rightarrow \mathbb{R}$.
 The description $\hat{\bm{h}}(s)$ of the object $s$ is the value of these statistics on the object 
 \[
@@ -240,7 +240,7 @@ This feature generation procedure extracts the feature description of time serie
 
 \subsubsection*{Autoregressive model}
 In this method we assume autoregressive model~\cite{lukashin2003adaptive} of the order $n$ as a hypothesis for generation of time series $s$. 
-Each component of the object $s$ from~\eqref{eq::time_series} is assumed as a linear combination of the previous $n$ components 
+Each component of the object $s$ from~\eqref{eq::time_series} is a linear combination of the previous $n$ components 
 \begin{equation*}
 	x_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j} + \epsilon_t,
 \end{equation*}
@@ -252,14 +252,14 @@ Prediction of the autoregressive model is defined by
 \end{equation}
 The order of the autoregressive model $n$ is a structural parameter. 
 
-The feature map $\hat{\bm{h}}(s)$ is given by optimal parameters of autoregressive model $\mathbf{w}^* = \{w^*_j\}_{j=0}^n$ for time series $s$. 
-The optimal parameters are defined by minimizing the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}
+The optimal parameters of autoregressive model $\mathbf{w}^* = \{w^*_j\}_{j=0}^n$ for time series $s$ define the feature map $\hat{\bm{h}}(s)$.
+These parameters minimize the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}
 
 \begin{equation}
 	\bm{h}(s) = \mathbf{w}^* = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
 	\label{eq::autoregression_description}
 \end{equation}
-The problem~\eqref{eq::autoregression_description} is the linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
+The problem~\eqref{eq::autoregression_description} is a linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
 The example of approximation using autoregressive model is demonstrated on the Figure~\ref{fig::ar_example}.
 
 \begin{figure}[h]
@@ -280,7 +280,7 @@ Alternative hypothesis for generation of time series is SSA (Singular Spectrum A
 	x_{T-n+1} & x_{T-n+2} & \dots & x_T
 	\end{pmatrix}.
 \]
-Here $n$, called the window width, is an external structural parameter.
+Here $n$ is a window width, which is an external structural parameter.
 The singular decomposition~\cite{golub1970singular} of the matrix $\mathbf{X}^{\T} \mathbf{X}$:
 \[
 	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
@@ -290,18 +290,17 @@ where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \do
 	\hat{\bm{h}}(s) = (\lambda_1, \dots, \lambda_n).
 \]
 \subsubsection*{Splines}
-{\color{red} “”“ ≈–≈—‹ Õ¿œ»—¿Õ¿!!!}
 Approximation of time series can be done by splines~\cite{deboor1978splines}. The spline is defined by its parameters: knots and coefficients.
 The set of knots $\{\xi_\ell\}_{\ell=0}^M$ are uniformly distributed over time series.
 The models which are built on each the interval $[\xi_{\ell-1}; \xi_{\ell}]$ are given by the coefficients $\{\mathbf{w}_\ell\}_{\ell=1}^{M}$.
 
 In order to find optimal spline parameters $\mathbf{w}$, one need to solve system of equations with additional constraints of equality of derivatives up to second order on the edges of intervals. If we denote each spline segment as $p_i(t)$ $i = 1, \dots, M$ and spline as a whole as $S(t)$, we can write these equations in a following way:
 \begin{align*}
-	&S(x) = \begin{cases}
-	p_1(x) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1]\\
-	p_2(x) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2]\\
+	&S(t) = \begin{cases}
+	p_1(t) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1]\\
+	p_2(t) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2]\\
 	\cdots &\\
-	p_{M}(x) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M]					
+	p_{M}(t) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M]					
 	\end{cases}\\
 	&S(t) = x_t \quad t = 1, \dots, T\\
 	&p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1\\
@@ -364,20 +363,25 @@ In this section we will describe our approach to classification of time series u
 We use three different classification models: logistic regression, SVM and random forest.
 \section*{Classification methods}
 \subsubsection*{Logistic regression}
-{\color{red} œŒ◊≈Ã” “”“ Õ≈“ —¬Œ¡ŒƒÕŒ√Œ ◊À≈Õ¿ b, ¿ ¬ SVM ≈—“‹?}
-The first approach to classification is regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
+The first approach to classification is a regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
 
 \begin{equation*}
-	L(\bm{\theta}, \mathfrak{D}_H, \mu) = \sum_{i=1}^{m} \log\left(1 + \exp(-y_i \bm{\theta}^{\T} \mathbf{h}_i)\right) + \frac{\mu}{2} \|\bm{\theta}\|^2,
+	L(\bm{\theta}, \mathfrak{D}_H, \mu) = \sum_{i=1}^{m} \log\left(1 + \exp(-y_i [\bm{w}^{\T} \mathbf{h}_i + b])\right) + \frac{\mu}{2} \|\bm{w}\|^2,
 \end{equation*}
-
+where 
+\begin{equation*}
+\bm{\theta}  = \begin{pmatrix}
+	\bm{w} \\ b
+\end{pmatrix}.
+\end{equation*}
+Thus, 
 \begin{equation*}
 	\bm{\theta}^* = \argmin_{\mathbb{\theta}} L(\bm{\theta}, \mathfrak{D}_H, \mu).
 \end{equation*}
 
 The classification rule $g(\mathbf{h}, \bm{\theta})$ is given by sign of the linear combination for the object description $\mathbf{h}$ and parameters $\bm{\theta}^*$
 \begin{equation*}
-	\hat{y} = g(\mathbf{h}, \bm{\theta}^*) = \sgn(\mathbf{h}^{\T} \bm{\theta}^*).
+	\hat{y} = g(\mathbf{h}, \bm{\theta}^*) = \sgn(\mathbf{h}^{\T} \bm{w}^* + b^*).
 \end{equation*}
 
 \subsubsection*{SVM}
@@ -398,7 +402,7 @@ The prediction for new object is
 \end{equation*}
 
 \subsubsection*{Random Forest}
-The random forest is an algorithm, which exploits the idea of bagging. This is an approach of building many random weak classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of single trees:
+The random forest is an algorithm, which exploits the idea of bagging. This is an approach of building many random unstable classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of a single tree:
 
 \begin{equation*}
 	\hat{y} = \frac{1}{B} \sum_{i=1}^{B} g(\mathbf{h}_i),
@@ -407,7 +411,7 @@ The random forest is an algorithm, which exploits the idea of bagging. This is a
 where $B$ is an amount of trees used for bagging.
 
 \section*{Experiment}
-In this paper we consider two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
+In this paper we considered two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
 The smart phone accelerometer measures acceleration along three axis. 
 Sample rate equals 50 ms. 
 The WISDM dataset consists of 4321 objects and each time series belongs to one of the six activities : Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 objects with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
@@ -457,39 +461,38 @@ In the Figure~\ref{fig::ts_example} the example of the time series for one activ
 	\label{tbl::activities_distributions}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\linewidth]{Presentation/ts_example.png}
 	\caption{Time series example}
 	\label{fig::ts_example}
 \end{figure}
 
-For each dataset we applied the feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
+For each dataset we applied feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
 We used three classification model for each generated feature description: logistic regression, support vector machine and random forest. 
-The external structural parameters procedures,  such as the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using 3-fold cross validation procedure. {\color{red} ‘Œ–Ã”À¿ CV}
+The external structural parameters: the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, i.e. minimizing
+\begin{align}\label{cv}
+CV(K) = \frac{1}{K}\sum_{k=1}^{K} L(f_k, \mathfrak{D}\setminus \mathfrak{C}_k),
+\end{align}
+where $C_k$ is a $\frac{K-1}{K}$ fraction of data, used for training model $f_k$.
 The hyperparameters $\bm{\mu}$ for classification models were also tuned using the same cross validation procedure. 
 
 
 The first approach for feature generation is expert functions. The main drawback of this approach is that we are restricted by our choice of the expert functions and these functions might be impossible to derive for some types of data.
 
-The autoregressive model were tuned to find the optimal length $n$. Cross validation procedure gives optimal value $n=20$ for both dataset. 
+The autoregressive model was tuned to find the optimal length $n$. Cross validation procedure gives optimal value $n=20$ for both dataset. 
 
-The singular spectrum analysis were tuned in the same way to find the optimal window width $n$. Analogously to autoregressive model the cross validation procedure gives the same value $n=20$. Authors assume that it means that time series has memory of this size.
+The singular spectrum analysis was tuned in the same way to find the optimal window width $n$. Similar to autoregressive model, cross validation procedure gives the same value $n=20$.
 
-We fit splines for time series using $scipy$ python library {\color{red} ——€À ¿ Õ¿ SCIPY}. 
-This software fits 3-order B-splines~\cite{deboor1978splines}. 
-The knots $\{\xi_{\ell}\}_{\ell = 1}^M$ for  splines were distributed uniformly. 
-The number~$M$ were chosen implicitly by choosing the proper smoothing parameter~$s$. 
-The less the value of $s$, the larger the number of knots $M$. 
-The fitting was constructed as follows. 
-Firstly, there was the initialization step to find appropriate bounds for smoothing parameter. 
-The next step is finding the smoothing parameter in this interval using bi-search approach. {\color{red} ¬Œ“ ›“Œ ¡€À —“–¿ÕÕ€… ¿¡«¿÷}
+We fit cubic splines~\cite{deboor1978splines} for time series using $scipy$ python library~\cite{scipy}. 
+The knots $\{\xi_{\ell}\}_{\ell = 1}^M$ for splines were distributed uniformly. 
+Value of~$M$ was chosen with cross-validation. 
 
 The feature extraction methods gives the following number of features for both datasets: expert features: 40; autoregressive model: 63; singular spectrum analysis: 60; splines: 33.
 
-The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result is obtained by splines parameters. 
+The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result was obtained with spline approximation. 
 The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results highly depend on the classification model. 
-For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest are strongly correlated.
+For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest is almost the same.
 
 \begin{figure}[h]
 	\centering
