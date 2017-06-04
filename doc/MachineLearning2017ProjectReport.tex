@@ -203,7 +203,7 @@ To evaluate the quality of our approximation we consider the accuracy score.
 This choice is based on our wish to compare our results with previous articles~\cite{karasikov24feature, ivkin} and easy interpretation. 
 Accuracy score is a relation between correctly classified objects and their total number in dataset:
 \begin{equation*}
-\textrm{accuracy} = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
+\mathrm{accuracy} = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
 \end{equation*}
 where $\hat{y}_i = \hat{f}(s_i)$ is a prediction of the classifier. 
 
@@ -285,7 +285,7 @@ The singular decomposition~\cite{golub1970singular} of the matrix $\mathbf{X}^{\
 \[
 	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
 \]
-where $\mathbf{U}$ is a unitary matrix and $\Lambda = \text{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description of the object $s$
+where $\mathbf{U}$ is a unitary matrix and $\Lambda = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description of the object $s$
 \[
 	\hat{\bm{h}}(s) = (\lambda_1, \dots, \lambda_n).
 \]
@@ -391,7 +391,7 @@ The problem of SVM model can be formulated in a following way:
 	\bm{\theta}^*  = \begin{pmatrix}
 	\bm{w^*} \\ b^* \\ \bm{\xi}^*
 	\end{pmatrix}= &\argmin_{\bm{w}, b, \bm{\xi}}  \frac{1}{2} \|\bm{w}\|^2 + C\sum_{i=1}^{m} \xi_i,\\
-	\text{subject to} \quad &y_i (\langle \bm{w}, \mathbf{h}_i \rangle + b) \geq 1 - \xi_i,\\
+	\mbox{subject to} \quad &y_i (\langle \bm{w}, \mathbf{h}_i \rangle + b) \geq 1 - \xi_i,\\
 	&\xi_i \geq 0, \quad 1 \leq i \leq m.
 \end{align*}
  
