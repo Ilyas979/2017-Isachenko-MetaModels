@@ -6,7 +6,7 @@
 
 \DeclareMathOperator{\sgn}{\mathop{sgn}}
 \DeclareMathOperator*{\argmin}{arg\,min}
-\newcommand{\T}{{\mbox{\footnotesize\sffamily\upshape\mdseries T}}}
+\newcommand{\T}{{\mbox{\scriptsize\sffamily\upshape\mdseries T}}}
 
 \begin{document}
 	
@@ -63,7 +63,7 @@ In our project we focus mainly on comparing different methods of feature generat
 
 Expert-defined functions allow to avoid the problem of feature extraction. These functions for time series task include average value, standard deviation, mean absolute deviation and distribution for each component. In autoregressive model we build parametric model for each time series and use parameters of the model as features for classification. Singular spectrum analysis proposes to use eigenvalues of trajectory matrix as features for building classifier.
 
-The experiment was conducted on twoaccelerometer datasets: WISDM~\cite{wisdm}, USC-HAD~\cite{usc}. 
+The experiment was conducted on two accelerometer datasets: WISDM~\cite{wisdm}, USC-HAD~\cite{usc}. 
 We compared the performance of stated feature extraction methods, as well as different classification algorithms. 
 The latter include logistic regression, random forest and SVM.
 
@@ -196,7 +196,7 @@ p_{M}(t) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M],
 &S(t) = x_t \quad t = 1, \dots, T,\\
 &p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1.\\
 \end{align*}
-The feature description of the time series could be assumed as a union of these parameters.
+The feature description of the time series could be assumed as a union of these parameters:
 \[
 \bm{h}(s) = (\mathbf{w}_1, \dots, \mathbf{w}_{M}).
 \]
@@ -264,11 +264,10 @@ where $B$ is an amount of trees used for bagging.
 
 \section{Experiment}
 In this paper we considered two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
-The smart phone accelerometer measures acceleration along three axis. 
-Frequency ranges from 20 to 100 Hz. 
+The smart phone accelerometer measures acceleration along three axis with frequencies equal to 20 and 100 Hz. 
 The WISDM dataset consists of 4321 time series. Each time series belongs to one of the six activities: Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 time series with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
-The distributions of time series activities for each datasets are presented in tfable~\ref{tbl::activities_distributions}. 
-The length of each time series equals 200 which accounts 10 second. 
+The distributions of time series activities for each datasets are presented in table~\ref{tbl::activities_distributions}. 
+The length of each time series equals 200 which accounts 10 seconds. 
 In the Fig.~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
 
 \begin{table}[h]
