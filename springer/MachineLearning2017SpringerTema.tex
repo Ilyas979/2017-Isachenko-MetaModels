@@ -30,15 +30,15 @@
 	\and
 	Moscow Institute of Physics and Technology, Institutskiy lane 9, Dolgoprudny,  141700, Russia \\ 
 	Skolkovo Institute of Science and Technology, Nobel street 3, Moscow, 143026, Russia\\
-	\email{ilya250894@gmail.com} \and 
+	\email{isa-ro@yandex.ru} \and 
 	Moscow Institute of Physics and Technology, Institutskiy lane 9, Dolgoprudny, 141700, Russia \\ 
 	Skolkovo Institute of Science and Technology, Nobel street 3, Moscow, 143026, Russia\\
-	\email{artem.bochkarev@phystech.edu}}
+	\email{isa-ro@yandex.ru}}
 
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-	The development and proliferation of various portable sensors poses new challenges for analyzing and finding meaning in this data. In our work we investigate classification of complex structured objects. One of the main problems in this task is to generate meaningful and relatively small set of features. We compare several approaches for feature extraction such as expertly defined features, autoregressive model and SSA. We propose a new feature generation algorithm, based on local spline approximation. The experiment is conducted on two datasets for human activity recognition using accelerometer.
+	The development and proliferation of various portable sensors poses new challenges for analyzing and finding meaning in this data. In our work we investigate classification of complex structured objects. One of the main problems in this task is to generate meaningful and relatively small set of features. We compare several approaches for feature extraction such as expertly defined features, autoregression model and SSA. We propose a new feature generation algorithm, based on local spline approximation. The experiment is conducted on two datasets for human activity recognition using accelerometer.
 	\keywords{complex structured objects, time series, local approximation models}
 \end{abstract}
 
@@ -59,17 +59,28 @@ The main problem to tackle is the lack of computational resources, memory and en
 The problem of classifying complex structured objects is split in two distinctive procedures. 
 First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. 
 For simplicity, we assume that these two procedures can be built and analysed separately. 
-In our project we focus mainly on comparing different methods of feature generation~\cite{karasikov2016feature,ivkin2015ts}. Existing approaches include expert-defined functions~\cite{kwapisz2011activity}, autoregressive model~\cite{lukashin2003adaptive} and singular spectrum analysis~\cite{hassani2007singular}. 
+In our project we focused mainly on comparing different methods of feature generation \cite{karasikov2016feature,ivkin2015ts}. 
 
-Expert-defined functions allow to avoid the problem of feature extraction. These functions for time series task include average value, standard deviation, mean absolute deviation and distribution for each component. In autoregressive model we build parametric model for each time series and use parameters of the model as features for classification. Singular spectrum analysis proposes to use eigenvalues of trajectory matrix as features for building classifier.
+The first approach for feature generation is calculating expertly defined functions of time series \cite{kwapisz2011activity}. 
+These functions include average value, standard deviation, mean absolute deviation and distribution for each component. 
+We consider this approach a baseline, as it is the simplest method we use.
 
-The experiment was conducted on twoaccelerometer datasets: WISDM~\cite{wisdm}, USC-HAD~\cite{usc}. 
+We compare baseline with more sophisticated parametric feature generation methods, in which we build approximation models and use their parameters as our final features for classification. 
+This paper proposes to use a local spline approximation procedure to extract features.
+In this setup features are knots and parameters of optimal cubic splines approximating our data. 
+We compare this method with other well-known methods for extracting features from time series.
+One of them is autoregressive model \cite{lukashin2003adaptive}. 
+For each time series we build parametric model and use those parameters as features for classification. 
+Another approach is the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
+We use eigenvalues of trajectory matrix as features for building classifier. 
+
+The experiment was conducted on two real accelerometer datasets \cite{wisdm,usc}. 
 We compared the performance of stated feature extraction methods, as well as different classification algorithms. 
 The latter include logistic regression, random forest and SVM.
 
 
 \section{Problem Statement}
-Let $\mathcal{S}$ be space of complex structured objects, $Y$ is a finite set of class labels. 
+Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
 We consider accelerometer time series as complex structured objects. Time series is represented as the vector with fixed length $T$:
 \begin{equation}
 s = [x_1, \dots, x_T]^{\T} \in \mathcal{S}.
@@ -79,17 +90,17 @@ We assume that there is a hidden true dependence $f^*: \mathcal{S} \rightarrow Y
 Denote by $\mathcal{D} = \{(s_i, y_i)\}_{i=1}^m$ a~given sample, where $s_i \in \mathcal{S}$ and $y_i = f^*(s_i)\in Y$.
 The problem is to recover the function~$f^*$. 
 We assume that the target function $f^*$ can be approximated by some function $\hat{f}$ from the class of function compositions $f = g \circ \bm{h}$. 
-Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \bbbr^n$,
+Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \bbbr^k$,
 $g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the set of class labels $Y$. 
 The function $\hat{g}$ corresponds to classification model which is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
 
-The determining of the approximation function $\hat{f}$ is equivalent to determining the optimal functions $\bm{h}$ and  $g$. 
-The function $\bm{h}$ corresponds to generating the appropriate feature space $H$. 
+The determining of the function $\hat{f}$ is equivalent to determining the functions $\hat{\bm{h}}$ and  $\hat{g}$. 
+The function $\hat{\bm{h}}$ corresponds to generating the appropriate feature space $H$. 
 We consider different local approximation models as the feature generation methods. 
 In this case the features are the estimated parameters of the models.
 
-Given appropriate feature space $H$ and feature map $\bm{h}$ we transform our original sample $\mathcal{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathcal{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = \bm{h}(s_i) \in H$. 
-The function $g(\mathbf{h}, \bm{\theta})$ is defined by its parameter vector $\bm{\theta} \in \Theta$. 
+Given appropriate feature space $H$ and feature map $\hat{\bm{h}}$ we transform our original sample $\mathcal{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathcal{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = \hat{\bm{h}}(s_i) \in H$. 
+The function $\hat{g}(\mathbf{h}, \bm{\theta})$ is defined by its parameter vector $\bm{\theta} \in \Theta$. 
 The optimal parameters~$\hat{\bm{\theta}}$ are given by
 \begin{equation}
 \hat{\bm{\theta}} = \argmin_{\bm{\theta}} L(\bm{\theta}, \mathcal{D}_H, \bm{\mu}),
@@ -111,15 +122,16 @@ The main focus of this paper is to compare different approaches for feature gene
 
 \subsubsection{Expert Functions.}
 
-We use the expert-given feature set as the baseline for local approximation models.
-These functions are statistics $h_i$, where $h_i: \mathcal{S} \rightarrow \bbbr$.
-The description $\bm{h}(s)$ of the object $s$ is the value of these statistics on the object 
+We use the expert functions features as the baseline for local approximation models.
+Expert functions are based on prior knowledge of the original objects. 
+These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$, where $h_i: \mathcal{S} \rightarrow \bbbr$.
+The description $\hat{\bm{h}}(s)$ of the object $s$ is the value of these statistics on the object 
 \[
-\bm{h}(s) = [h_1(s), \dots, h_n(s)]^{\T}.
+\hat{\bm{h}}(s) = [h_1(s), \dots, h_n(s)]^{\T}.
 \]
-
-In paper~\cite{kwapisz2011activity} the authors proposed to use the expert functions listed in table~\ref{tbl::expert_functions}.
-This feature generation procedure extracts the feature description of time series $\bm{h}(s) \in \bbbr^{40}$.
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$.
+In paper~\cite{kwapisz2011activity} the authors proposed to use the expert functions listed in table (\ref{tbl::expert_functions}).
+This feature generation procedure extracts the feature description of time series $\hat{\bm{h}}(s) \in \bbbr^{40}$.
 
 \begin{table}[h]
 	\centering
@@ -130,26 +142,33 @@ This feature generation procedure extracts the feature description of time serie
 		Mean                    & $\bar{x} = \frac{1}{T} \sum_{t=1}^{T} x_t$    \\ \hline
 		Standard deviation      & $\sqrt{\frac{1}{T} \sum_{t=1}^{T} (x_t - \bar{x})^2}$    \\ \hline
 		Mean absolute deviation & $\frac{1}{T} \sum_{t=1}^{T} |x_t - \bar{x}|$    \\ \hline
-		Distribution            &  Histogram values with 10 bins    \\ \hline
+		Distribution            & Number of points in each histogram bin    \\ \hline
 	\end{tabular}
 	\label{tbl::expert_functions}
 \end{table}
 
 \subsubsection{Autoregressive Model.}
-The autoregressive model~\cite{lukashin2003adaptive} of the order $n$ generates features of time series $s$ with model parameters. 
-Each time series is approximated by a linear combination of its previous $n-1$ components 
+In this method we assume autoregressive model~\cite{lukashin2003adaptive} of the order $n$ as a hypothesis for generation of time series $s$. 
+Each component of the object $s$ from~\eqref{eq::time_series} is a linear combination of the previous $n$ components 
 \begin{equation*}
-x_t = w_0 + \sum_{j=1}^{n-1} w_j x_{t-j} + \epsilon_t,
+x_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j} + \epsilon_t,
 \end{equation*}
-where $\epsilon_t$ is a residual. 
-The optimal parameters $\mathbf{w}^*$ of the autoregressive model are the features $\bm{h}(s)$.
-These parameters minimize the squared error between the time series $s$ and its prediction
+where $\epsilon_t$ is a random noise. 
+Prediction of the autoregressive model is defined by
+\begin{equation}
+\hat{x}_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j}.
+\label{eq::autoregression_prediction}
+\end{equation}
+The order of the autoregressive model $n$ is a structural parameter. 
+
+The optimal parameters of autoregressive model $\mathbf{w}^* = \{w^*_j\}_{j=0}^n$ for time series $s$ define the feature map $\hat{\bm{h}}(s)$.
+These parameters minimize the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}
 
 \begin{equation}
-\bm{h}(s) = \mathbf{w}^* = \argmin_{\mathbf{w} \in \bbbr^{n}} \left( \sum_{t=n}^{T} \|x_t - \hat{x}_t\|^2\right).
-\label{eq::autoregressive_description}
+\bm{h}(s) = \mathbf{w}^* = \argmin_{\mathbf{w} \in \bbbr^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
+\label{eq::autoregression_description}
 \end{equation}
-The problem~\eqref{eq::autoregressive_description} is a linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
+The problem~\eqref{eq::autoregression_description} is a linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
 The example of approximation using autoregressive model is demonstrated on the Fig.~\ref{fig::ar_example}.
 
 \begin{figure}[h]
@@ -170,38 +189,37 @@ x_2 & x_3 & \dots & x_{n+1} \\
 x_{T-n+1} & x_{T-n+2} & \dots & x_T
 \end{pmatrix}.
 \]
-Here $n$ is the window width, which is an external structure parameter.
+Here $n$ is a window width, which is an external structural parameter.
 The singular decomposition~\cite{golub1970singular} of the matrix $\mathbf{X}^{\T} \mathbf{X}$:
 \[
 \mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
 \]
-where $\mathbf{U}$ is a unitary matrix and $\Lambda = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. 
-The $n$ largest values of spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ is used as feature description of the object $s$:
+where $\mathbf{U}$ is a unitary matrix and $\Lambda = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description of the object $s$
 \[
-\bm{h}(s) = (\lambda_1, \dots, \lambda_n).
+\hat{\bm{h}}(s) = (\lambda_1, \dots, \lambda_n).
 \]
-\subsubsection{Spline Approximation.}
-The proposed method approximates time series with splines~\cite{deboor1978splines}. A spline is defined by its parameters: knots and coefficients.
+\subsubsection{Splines.}
+Approximation of time series can be done by splines~\cite{deboor1978splines}. The spline is defined by its parameters: knots and coefficients.
 The set of knots $\{\xi_\ell\}_{\ell=0}^M$ are uniformly distributed over time series.
-The models, which are built on each the interval $[\xi_{\ell-1}; \xi_{\ell}]$, are given by the coefficients $\{\mathbf{w}_\ell\}_{\ell=1}^{M}$.
+The models which are built on each the interval $[\xi_{\ell-1}; \xi_{\ell}]$ are given by the coefficients $\{\mathbf{w}_\ell\}_{\ell=1}^{M}$.
 
-Optimal spline parameters are solution of a system with additional constraints of equality of derivatives up to second order on the edges of intervals. Denote each spline segment as $p_i(t)$ $i = 1, \dots, M$ and spline as a whole as $S(t)$ and write these equations:
+In order to find optimal spline parameters $\mathbf{w}$, one need to solve system of equations with additional constraints of equality of derivatives up to second order on the edges of intervals. If we denote each spline segment as $p_i(t)$ $i = 1, \dots, M$ and spline as a whole as $S(t)$, we can write these equations in a following way:
 \begin{align*}
 &S(t) = \begin{cases}
-p_1(t) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1],\\
-p_2(t) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2],\\
+p_1(t) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1]\\
+p_2(t) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2]\\
 \cdots &\\
-p_{M}(t) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M],					
+p_{M}(t) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M]					
 \end{cases}\\
-&S(t) = x_t \quad t = 1, \dots, T,\\
-&p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1.\\
+&S(t) = x_t \quad t = 1, \dots, T\\
+&p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1\\
 \end{align*}
 The feature description of the time series could be assumed as a union of these parameters.
 \[
-\bm{h}(s) = (\mathbf{w}_1, \dots, \mathbf{w}_{M}).
+\hat{\bm{h}}(s) = (\mathbf{w}_1, \dots, \mathbf{w}_{M}).
 \]
 
-Fig.~\ref{fig::spline_example} shows the time series approximation given by splines. 
+In the Fig.~\ref{fig::spline_example} one could find the result of time series approximation given by splines. 
 Compared to the autoregressive model, the splines method gives smoother approximation using almost the same number of parameters.
 
 \begin{figure}[h]
@@ -211,10 +229,10 @@ Compared to the autoregressive model, the splines method gives smoother approxim
 	\label{fig::spline_example}
 \end{figure}
 
-\section{Time Series Classification}
+\section{Time series classification}
 Multiclass classification uses one-vs-rest approach to train binary classifiers for each class label and then, on the prediction step, classify new object according to the most confident classifier. Three classification models are used: logistic regression, SVM and random forest.
 
-\subsubsection{Regularized Logistic Regression.}
+\subsubsection{Regularized logistic regression.}
 The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the error function
 
 \begin{equation*}
@@ -237,7 +255,7 @@ The classification rule $g(\mathbf{h}, \bm{\theta})$ is given by sign of the lin
 \end{equation*}
 
 \subsubsection{SVM.}
-The problem is
+SVM model:
 
 \begin{align*}
 \bm{\theta}^*  = \begin{pmatrix}
@@ -267,7 +285,7 @@ In this paper we considered two different smart phone based datasets: WISDM~\cit
 The smart phone accelerometer measures acceleration along three axis. 
 Frequency ranges from 20 to 100 Hz. 
 The WISDM dataset consists of 4321 time series. Each time series belongs to one of the six activities: Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 time series with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
-The distributions of time series activities for each datasets are presented in tfable~\ref{tbl::activities_distributions}. 
+The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}. 
 The length of each time series equals 200 which accounts 10 second. 
 In the Fig.~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
 
@@ -322,7 +340,7 @@ In the Fig.~\ref{fig::ts_example} the example of the time series for one activit
 
 For each dataset apply feature generation procedures: expert functions, autoregressive model, SSA and splines. 
 Three classification models for each generated feature description: logistic regression, support vector machine and random forest. 
-The structure parameters: the length $n$ for autoregressive model, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, minimizing
+The structure parameters: the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, minimizing
 \begin{align}\label{cv}
 CV(K) = \frac{1}{K}\sum_{k=1}^{K} L(f_k, \mathcal{D}\setminus \mathcal{C}_k),
 \end{align}
@@ -424,9 +442,10 @@ We also carried out the experiment for union of all $196$ generated features. Th
 \section{Conclusion}
 
 The paper investigates the problem of complex structured objects classification.
-The experiment compares various approaches of feature extraction, particularly the expert functions and local approximation models on data from smart phone accelerometer.
+The experiment compares various approaches of feature extraction, particularly the expert functions and local approximation models on data from smartphone accelerometer.
 Logistic regression, SVM and random forest are used for classification. 
 The results show that obtained features allows to recover the class label with the high quality.
+
 \bibliographystyle{splncs03}
 
 \begin{thebibliography}{10}
