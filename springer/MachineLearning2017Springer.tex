@@ -90,7 +90,7 @@ We assume that there is a hidden true dependence $f^*: \mathcal{S} \rightarrow Y
 Denote by $\mathcal{D} = \{(s_i, y_i)\}_{i=1}^m$ a~given sample, where $s_i \in \mathcal{S}$ and $y_i = f^*(s_i)\in Y$.
 The problem is to recover the function~$f^*$. 
 We assume that the target function $f^*$ can be approximated by some function $\hat{f}$ from the class of function compositions $f = g \circ \bm{h}$. 
-Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \bbbr^n$,
+Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \bbbr^k$,
 $g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the set of class labels $Y$. 
 The function $\hat{g}$ corresponds to classification model which is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
 
@@ -229,15 +229,11 @@ Compared to the autoregressive model, the splines method gives smoother approxim
 	\label{fig::spline_example}
 \end{figure}
 
-\section{Classification}
-\subsubsection{Multiclass Classification.}
-As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. 
-We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
-In this section we will describe our approach to classification of time series using newly generated features. 
-We use three different classification models: logistic regression, SVM and random forest.
-\section{Classification Methods}
-\subsubsection{Logistic Regression.}
-The first approach to classification is a regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
+\section{Time series classification}
+Multiclass classification uses one-vs-rest approach to train binary classifiers for each class label and then, on the prediction step, classify new object according to the most confident classifier. Three classification models are used: logistic regression, SVM and random forest.
+
+\subsubsection{Regularized logistic regression.}
+The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the error function
 
 \begin{equation*}
 L(\bm{\theta}, \mathcal{D}_H, \mu) = \sum_{i=1}^{m} \log\left(1 + \exp(-y_i [\bm{w}^{\T} \mathbf{h}_i + b])\right) + \frac{\mu}{2} \|\bm{w}\|^2,
@@ -259,7 +255,7 @@ The classification rule $g(\mathbf{h}, \bm{\theta})$ is given by sign of the lin
 \end{equation*}
 
 \subsubsection{SVM.}
-The problem of SVM model can be formulated in a following way:
+SVM model:
 
 \begin{align*}
 \bm{\theta}^*  = \begin{pmatrix}
@@ -272,11 +268,11 @@ The problem of SVM model can be formulated in a following way:
 The prediction for new object is
 
 \begin{equation*}
-\hat{y} = \sgn (\mathbf{h}^{\T} \bm{w}^* + b^*)
+\hat{y} = \sgn (\mathbf{h}^{\T} \bm{w}^* + b^*).
 \end{equation*}
 
 \subsubsection{Random Forest.}
-The random forest is an algorithm, which exploits the idea of bagging. This is an approach of building many random unstable classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of a single tree:
+The random forest exploits the idea of bagging. This is an approach of building many random unstable classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of a single tree:
 
 \begin{equation*}
 \hat{y} = \frac{1}{B} \sum_{i=1}^{B} g(\mathbf{h}_i),
@@ -288,7 +284,7 @@ where $B$ is an amount of trees used for bagging.
 In this paper we considered two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
 The smart phone accelerometer measures acceleration along three axis. 
 Sample rate equals 50 ms. 
-The WISDM dataset consists of 4321 objects and each time series belongs to one of the six activities : Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 objects with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
+The WISDM dataset consists of 4321 time series. Each time series belongs to one of the six activities : Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 time series with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
 The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}. 
 The length of each time series equals 200 which accounts 10 second. 
 In the Fig.~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
@@ -342,9 +338,9 @@ In the Fig.~\ref{fig::ts_example} the example of the time series for one activit
 	\label{fig::ts_example}
 \end{figure}
 
-For each dataset we applied feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
-We used three classification model for each generated feature description: logistic regression, support vector machine and random forest. 
-The external structural parameters: the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, i.e. minimizing
+For each dataset apply feature generation procedures: expert functions, autoregressive model, SSA and splines. 
+Three classification models for each generated feature description: logistic regression, support vector machine and random forest. 
+The structure parameters: the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, minimizing
 \begin{align}\label{cv}
 CV(K) = \frac{1}{K}\sum_{k=1}^{K} L(f_k, \mathcal{D}\setminus \mathcal{C}_k),
 \end{align}
@@ -445,10 +441,9 @@ We also carried out the experiment for union of all $196$ generated features. Th
 
 \section{Conclusion}
 
-The research consider the problem of complex structured objects classification.
-We investigated the different approaches of feature extraction, particularly the expert functions and data generation hypothesis. 
-The experiment on the real data from smart phone accelerometer were carried out. 
-We compared different feature descriptions and different classification models. 
+The paper investigates the problem of complex structured objects classification.
+The experiment compares various approaches of feature extraction, particularly the expert functions and local approximation models on data from smartphone accelerometer.
+Logistic regression, SVM and random forest are used for classification. 
 The results show that obtained features allows to recover the class label with the high quality.
 
 \bibliographystyle{splncs03}
