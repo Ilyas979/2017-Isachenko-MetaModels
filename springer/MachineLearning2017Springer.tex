@@ -10,41 +10,42 @@
 
 \begin{document}
 	
-\title{Metamodels for Complex Structured Objects Classification}
+\title{Feature Generation for Physical Activity Classification\thanks{This research is supported by RFBR project 16-07-01154}}
 %
-\titlerunning{Metamodels}  % abbreviated title (for running head)
+\titlerunning{Feature Generation}  % abbreviated title (for running head)
 %                                     also used for the TOC unless
 %                                     \toctitle is used
 %
-\author{Roman Isachenko\inst{1} \and Ilya Zharikov\inst{2}
-	Artem Bochkarev\inst{3}}
+\author{Roman Isachenko\inst{1}, Ilya Zharikov\inst{1}, 
+	Artem Bochkarev\inst{1}, Vadim Strijov\inst{2}}
 %
 \authorrunning{Roman Isachenko et al.} % abbreviated author list (for running head)
 %
 %%%% list of authors for the TOC (use if author list has to be modified)
 \tocauthor{Roman Isachenko, Ilya Zharikov, Artem Bochkarev}
 %
-\institute{Moscow Institute of Physics and Technology, Institutskiy lane 9, Dolgoprudny, 141700, Russia \\ 
-	Skolkovo Institute of Science and Technology, Nobel street 3, Moscow, 143026, Russia\\
-	\email{isa-ro@yandex.ru}
+\institute{Moscow Institute of Physics and Technology, Dolgoprudny, 141700, Russia \\ 
+	Skolkovo Institute of Science and Technology, Moscow, 143026, Russia\\
 	\and
-	Moscow Institute of Physics and Technology, Institutskiy lane 9, Dolgoprudny,  141700, Russia \\ 
-	Skolkovo Institute of Science and Technology, Nobel street 3, Moscow, 143026, Russia\\
-	\email{ilya250894@gmail.com} \and 
-	Moscow Institute of Physics and Technology, Institutskiy lane 9, Dolgoprudny, 141700, Russia \\ 
-	Skolkovo Institute of Science and Technology, Nobel street 3, Moscow, 143026, Russia\\
-	\email{artem.bochkarev@phystech.edu}}
+	Moscow Institute of Physics and Technology, Dolgoprudny, 141700, Russia \\ 
+	Dorodnicyn Computing Centre of RAS, Moscow, 119333, Russia
+}
 
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-	The development and proliferation of various portable sensors poses new challenges for analyzing and finding meaning in this data. In our work we investigate classification of complex structured objects. One of the main problems in this task is to generate meaningful and relatively small set of features. We compare several approaches for feature extraction such as expertly defined features, autoregressive model and SSA. We propose a new feature generation algorithm, based on local spline approximation. The experiment is conducted on two datasets for human activity recognition using accelerometer.
+	The development of wearable devices make it possible to analyse human physical activity.
+	The paper is devoted to the problem of classification accelerometer time series of smart phones.
+	The problem is to generate set of relevant features. Parameters of local approximation models is used as input features for classifier. 
+	We compare several approaches for feature extraction such as expertly defined features, autoregressive model and SSA. 
+	We propose new method for feature generation, based on local spline approximation. 
+	The experiment is conducted on two datasets for human activity recognition using accelerometer.
 	\keywords{complex structured objects, time series, local approximation models}
 \end{abstract}
 
 \section{Introduction}
-This paper investigates the multiclass classification problem of complex structured objects (i.e. we don't have feature representation suitable for direct classification). The application is the human activity recognition. 
-The accelerometer time series~\cite{ignatov2016human,lu2016towards,wang2014human} from mobile phones serve to recognize people activity in the internet of things smart homes~\cite{budnik2016learned,lu2016activity}.
+The paper investigates the multiclass classification problem of objects which don't have explicit feature representation. This problem arises in analysing biological data~\cite{motrenko2016extracting}, human behavior and social interactions~\cite{bao2004activity}. We consider the problem of human activity recognition.
+The accelerometer time series~\cite{ignatov2016human,lu2016towards,wang2014human} from smart phones serve to recognize human physical activity in the internet of things~\cite{budnik2016learned,lu2016activity}.
 New methods in this field range from topological data analysis~\cite{umeda2017time} to convolutional neural networks~\cite{hammerla2016deep}. 
 The extensive survey of methods and datasets for this problem is in~\cite{incel2013review}. 
 
@@ -57,16 +58,18 @@ This assumption allows to propose a flexible technology of accelerometer time se
 The main problem to tackle is the lack of computational resources, memory and energy in wearable devices. This investigation proposes an approach to generate features of time series as complex structured objects. The generated features bring adequate quality of classification and require moderate resources.
 
 The problem of classifying complex structured objects is split in two distinctive procedures. 
-First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. 
+First, we extract informative features, and then use those features as input to some classifier to obtain final model. 
 For simplicity, we assume that these two procedures can be built and analysed separately. 
-In our project we focus mainly on comparing different methods of feature generation~\cite{karasikov2016feature,ivkin2015ts}. Existing approaches include expert-defined functions~\cite{kwapisz2011activity}, autoregressive model~\cite{lukashin2003adaptive} and singular spectrum analysis~\cite{hassani2007singular}. 
+In our project we focus mainly on comparing different methods of feature generation~\cite{karasikov2016feature,ivkin2015ts} such as expert-defined functions, autoregressive model and singular spectrum analysis.
+Expert-defined functions~\cite{kwapisz2011activity} allow to avoid the problem of feature extraction. These functions for time series task include average value, standard deviation, mean absolute deviation and distribution for each component. In autoregressive model~\cite{lukashin2003adaptive} we build parametric model for each time series and use parameters of the model as features for classification. Singular spectrum analysis~\cite{hassani2007singular} proposes to use eigenvalues of trajectory matrix as features for building classifier.
 
-Expert-defined functions allow to avoid the problem of feature extraction. These functions for time series task include average value, standard deviation, mean absolute deviation and distribution for each component. In autoregressive model we build parametric model for each time series and use parameters of the model as features for classification. Singular spectrum analysis proposes to use eigenvalues of trajectory matrix as features for building classifier.
+The authors propose a new feature generation method. 
+We approximate time series with cubic splines~\cite{deboor1978splines}. 
+The spline interpolates the 3-order piecewise curve at the given dots. The additional smoothess conditions makes the curve and its first and second derivatives continuous. Splines give the smooth curve and adequate quality of approximation.
 
 The experiment was conducted on two accelerometer datasets: WISDM~\cite{wisdm}, USC-HAD~\cite{usc}. 
 We compared the performance of stated feature extraction methods, as well as different classification algorithms. 
 The latter include logistic regression, random forest and SVM.
-
 
 \section{Problem Statement}
 Let $\mathcal{S}$ be space of complex structured objects, $Y$ is a finite set of class labels. 
@@ -418,11 +421,18 @@ We also carried out the experiment for union of all $196$ generated features. Th
 The paper investigates the problem of complex structured objects classification.
 The experiment compares various approaches of feature extraction, particularly the expert functions and local approximation models on data from smart phone accelerometer.
 Logistic regression, SVM and random forest are used for classification. 
-The results show that obtained features allows to recover the class label with the high quality.
+The results show that obtained features allows to recover the class label with the high quality. The proposed spline approximation method gives the quality competitive with existing stated methods.
+
 \bibliographystyle{splncs03}
+
 \begin{thebibliography}{10}
 	\providecommand{\url}[1]{\texttt{#1}}
 	\providecommand{\urlprefix}{URL }
+	
+	\bibitem{bao2004activity}
+	Bao, L., Intille, S.S.: Activity recognition from user-annotated acceleration
+	data. In: International Conference on Pervasive Computing. pp. 1--17.
+	Springer (2004)
 	
 	\bibitem{budnik2016learned}
 	Budnik, M., Gutierrez-Gomez, E.L., Safadi, B., Pellerin, D., Qu{\'e}not, G.:
@@ -490,6 +500,11 @@ The results show that obtained features allows to recover the class label with t
 	Lukashin, Y.P.: Adaptive methods of short-term forecasting of time series. M.:
 	Finance and statistics  (2003)
 	
+	\bibitem{motrenko2016extracting}
+	Motrenko, A., Strijov, V.: Extracting fundamental periods to segment biomedical
+	signals. IEEE journal of biomedical and health informatics  20(6),
+	1466--1476 (2016)
+	
 	\bibitem{umeda2017time}
 	Umeda, Y.: Time series classification via topological data analysis.
 	Transactions of the Japanese Society for Artificial Intelligence  32(3),
@@ -509,6 +524,5 @@ The results show that obtained features allows to recover the class label with t
 	The wisdm dataset. \url{http://www.cis.fordham.edu/wisdm/dataset.php}
 	
 \end{thebibliography}
-
 
 \end{document}
