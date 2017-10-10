@@ -9,8 +9,20 @@
 \newcommand{\T}{{\mbox{\scriptsize\sffamily\upshape\mdseries T}}}
 
 \begin{document}
-	
-\title{Feature Generation for Physical Activity Classification\thanks{This research is supported by RFBR project 16-07-01154}}
+\begin{titlepage}
+\begin{center}
+		\LARGE Feature Generation for Physical Activity Classification\\
+		\bigskip
+		\bigskip
+\end{center}
+\large \textbf{Roman Isachenko}, Russia, Moscow Institute of Physics and Technology, isa-ro@yandex.ru. Postal address: 117303, Moscow, Kerchenskaya ulitsa, 1A-K1, 905.\\
+\large \textbf{Ilya Zharikov}, Russia, Moscow Institute of Physics and Technology, ilya250894@gmail.com.\\
+\large \textbf{Artem Bochkarev}, Russia, Moscow Institute of Physics and Technology, artem\_bochkarev@icloud.com.\\
+\large \textbf{Vadim Strijov}, Russia, Computing Centre of the Russian Academy of Sciences, strijov@gmail.com.\\
+\end{titlepage}
+
+
+\title{Feature Generation for Physical Activity Classification}
 %
 \titlerunning{Feature Generation}  % abbreviated title (for running head)
 %                                     also used for the TOC unless
@@ -29,9 +41,9 @@
 
 \begin{abstract}
 	The paper investigates the human physical activity classification problem.
-	Time series from accelerometer of a wearable device procude a dataset.
+	Time series from accelerometer of a wearable device produce a dataset.
 	Due to high dimension of the object description and low computational resources one has to state a feature generation problem.
-	The authors propose to use parameters of the local approximation models as informative features. 
+	The authors propose to use the parameters of the local approximation models as informative features. 
 	The experiment is conducted on two datasets for human activity recognition using accelerometer: WISDM and USC-HAD. 
 	It compares several superpositions of various generation and classification models.
 	\keywords{wearable devices, accelerometer, time series, local approximation, classification}
@@ -41,9 +53,9 @@
 The paper investigates the multiclass classification problem of objects with no explicit feature representation. This problem arises in analysing biological data~\cite{motrenko2016extracting}, human behavior and social interactions~\cite{bao2004activity}. It considers the problem of human activity recognition.
 The accelerometer time series~\cite{ignatov2016human,lu2016towards,wang2014human} from smart phones serve to recognize human physical activity in the internet of things~\cite{budnik2017learned,lu2016activity}.
 Methods to solve this problem range from topological data analysis~\cite{umeda2017time} to convolutional neural networks~\cite{hammerla2016deep}. 
-The extensive survey of methods and datasets for this problem is in~\cite{incel2013review}. 
+The extensive survey of the methods and datasets for this problem is in~\cite{incel2013review}. 
 
-In this work the dataset collects time series of acceleration from three axis, which is obtained from a mobile phone or another wearable device with accelerometer. 
+In this work the dataset is comprised of time series of acceleration from three axis, which is obtained from a mobile phone or another wearable device with accelerometer. 
 These time series are of various sizes, not aligned and multiscaled~\cite{geurts2001pattern}.
 The problem is to predict physical activity of a person. 
 The list of activities includes walking, running, sitting or walking up/down stairs.
@@ -64,7 +76,7 @@ The spline approximates the 3-order piecewise curve at the given knots. The addi
 
 The experiment was conducted on two accelerometer datasets: WISDM~\cite{wisdm}, USC-HAD~\cite{usc}. 
 We compared the performance of stated feature extraction methods, as well as different classification algorithms. 
-The latter include logistic regression, random forest and SVM.
+The latter includes logistic regression, random forest and SVM.
 
 \section{Problem Statement}
 The accelerometer time series is represented as a set $\mathcal{S}$ of segments $s$ of fixed length~$T$:
@@ -94,7 +106,7 @@ The optimal parameters~$\hat{\bm{\theta}}$ are given by the classification error
 \hat{\bm{\theta}} = \argmin_{\bm{\theta}} L(\bm{\theta}, \mathcal{D}_G, \bm{\mu}).
 \label{eq::optimal_classification_params}
 \end{equation}
-Here the vector $\bm{\mu}$ is external parameters of a particular classification model. The examples of these parameters and error functions for different classification models are given below.
+Here the vector $\bm{\mu}$ represents external parameters of a particular classification model. The examples of these parameters and error functions for different classification models are given below.
 
 To compare classification quality with results from~\cite{karasikov2016feature,ivkin2015ts} use the accuracy score:
 \begin{equation}
@@ -109,7 +121,7 @@ In this section we provide analysis and motivation for each of the methods.
 
 \subsubsection{Expert Functions.}
 
-Use the expert-given feature set as the baseline for local approximation models.
+Use the expert-given feature set as a baseline for local approximation models.
 These functions are statistics $g_j$, where $g_j: \bbbr^T \rightarrow \bbbr$.
 The description $\bm{g}(s)$ of the object $s$ is the value of these statistics on the object 
 \[
@@ -152,7 +164,7 @@ The example of approximation using autoregressive model is demonstrated on the F
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\linewidth]{pics/ar_example.png}
+ 	\includegraphics[width=1\linewidth]{pics/ar_example.png}
 	\caption{Time series approximation using autoregressive model with order $n = 20$}
 	\label{fig::ar_example}
 \end{figure}
@@ -302,7 +314,7 @@ Fig.~\ref{fig::ts_example} plots the example of the time series for one activity
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=1\linewidth]{ts_example.png}
+	\includegraphics[width=1\linewidth]{pics/ts_example.png}
 	\caption{Time series example}
 	\label{fig::ts_example}
 \end{figure}
@@ -310,9 +322,9 @@ Fig.~\ref{fig::ts_example} plots the example of the time series for one activity
 \begin{figure}[!h]
 	\centering
 	\subfloat{
-		\includegraphics[width=0.49\linewidth]{wisdm_methods.png}}
+		\includegraphics[width=0.49\linewidth]{pics/wisdm_methods.png}}
 	\subfloat{
-		\includegraphics[width=0.49\linewidth]{uschad_methods.png}}
+		\includegraphics[width=0.49\linewidth]{pics/uschad_methods.png}}
 	\caption{Multiclass accuracy score}
 	\label{fig::accuracy_results}
 \end{figure}
@@ -420,6 +432,17 @@ The number of splines parameters was less than for the other methods.
 The classification quality for splines are competitive with existing stated methods for both considered datasets.  
 Stacking of all extracted features gives better performance.
 
+\section{Declarations}
+\subsection{Availability of data and material}
+The datasets used in our experiments are available at \cite{usc,wisdm}
+\subsection{Competing interests}
+Not applicable.
+\subsection{Funding}
+This research is supported by RFBR project 16-07-01154.
+\subsection{Authors' contributions}
+Not applicable.
+\subsection{Acknowledgements}
+Not applicable.
 \bibliographystyle{splncs03}
 
 \begin{thebibliography}{10}
